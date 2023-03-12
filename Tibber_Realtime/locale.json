@@ -1,0 +1,19 @@
+{
+    "translations": {
+        "de": {
+            "power": "Aktuelle Leistung Bezug",
+            "powerProduction": "Aktuelle Leistung Einspeisung",
+            "lastMeterConsumption"  : "Zählerstand Bezug" ,
+            "lastMeterProduction"  : "Zählerstand Einspeisung" ,
+            "accumulatedConsumption"  : "Verbrauch des aktuellen Tages" ,
+            "accumulatedProduction"  : "Produktion des aktuellen Tages" ,
+            "accumulatedConsumptionLastHour"  : "Verbrauch der aktuellen Stunde" ,
+            "accumulatedProductionLastHour"  : "Produktion der aktuellen Stunde" ,
+            "accumulatedCost"  : "Kosten des aktuellen Tages" ,
+            "minPower"  : "minimale Leistung des Tages" ,
+            "maxPower"  : "maximale Leistung des Tages" ,
+            "averagePower"  : "durchschnittliche Leistung des Tages" ,
+            "currency"  : "Währung" 
+        }
+    }
+}

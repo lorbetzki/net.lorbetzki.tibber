@@ -1,0 +1,95 @@
+{
+    "elements": 
+    [
+        {
+            "type": "PasswordTextBox",
+            "name": "Token",
+            "caption": "User-Token"
+
+        },
+        { 
+            "type": "RowLayout",
+            "items": [
+                {
+                    "type": "Select",
+                    "name": "Home_ID",
+                    "caption": "Home ID",
+                    "options": [ {"caption" : "", "value":""}]
+                },
+                {
+                    "type": "Button",
+                    "label": "Zuhause abrufen",
+                    "onClick": "TIBBER_GetHomesData($id);",
+                    "enabled": true
+                    }
+            ]
+        },
+        {   "type": "CheckBox",
+            "name": "Consumption_log",
+            "caption": "Verbrauchsdaten Loggen",
+            "visible": false
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Preis Daten -> Variablen Einstellungen",
+            "expanded": true,
+            "items": [
+                    { 
+                        "type": "RowLayout",
+                        "items": [
+                            {   "type": "CheckBox",
+                                "name": "Price_log",
+                                "caption": "Preisdatenvarible Loggen",
+                                "visible": true,
+                                "enabled":true
+                            }
+                        ]
+                    },
+                    
+                    {   "type": "CheckBox",
+                        "name": "Price_Variables",
+                        "caption": "Preis - Variablen pro Stunde anlegen ( 24 für aktuellen Tag & 24 für Day Ahead Tag )",
+                        "visible": true
+                    },
+                    {   "type": "CheckBox",
+                        "name": "Price_Array",
+                        "caption": "Preis - Array anlegen -> Zur Nutzung in Scripten und anderen Modulen",
+                        "visible": false
+                    }
+                ]
+        }
+
+
+       
+    ],
+    "actions": [
+       
+        {
+            "type": "Button",
+            "label": "Preisdaten abrufen",
+            "onClick": "TIBBER_GetPriceData($id);"
+          }
+    ],
+    "status": [
+        {
+            "code": 102,
+            "icon": "active",
+            "caption": "Settings OK"
+          },
+        {
+            "code": 201,
+            "icon": "error",
+            "caption": "Token fehlt"
+          },
+          {
+            "code": 202,
+            "icon": "error",
+            "caption": "Zuhause fehlt"
+          },
+          {
+            "code": 210,
+            "icon": "error",
+            "caption": "Token ungültig"
+          }
+    ]
+}

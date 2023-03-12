@@ -1,0 +1,12 @@
+{
+    "id": "{02E41320-96E0-C4A5-9521-8D5C4C97365A}",
+    "name": "Tibber",
+    "type": 3,
+    "vendor": "Tibber",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "TIBBER",
+    "url": ""
+}

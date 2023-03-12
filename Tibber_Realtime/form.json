@@ -1,0 +1,148 @@
+{
+    "elements": 
+    [
+        {   "type": "CheckBox",
+            "name": "Active",
+            "caption": "Realtime Stream aktiv",
+            "enabled": true
+        },
+
+        {
+            "type": "PasswordTextBox",
+            "name": "Token",
+            "caption": "User-Token"
+
+        },
+        { 
+            "type": "RowLayout",
+            "items": [
+                {
+                    "type": "Select",
+                    "name": "Home_ID",
+                    "caption": "Home ID",
+                    "options": [ {"caption" : "", "value":""}]
+                },
+                {
+                    "type": "Button",
+                    "label": "Zuhause abrufen",
+                    "onClick": "TIBBERRT_GetHomesData($id);"
+                    }
+            ]
+        },
+        
+        {
+            "type": "List",
+            "name": "Variables",
+            "caption": "",
+            "sort": {
+                "column": "Pos",
+                "direction": "ascending"
+            },
+            "add": false,
+            "delete": false,
+            "columns": [
+                {
+                    "caption": "Ident",
+                    "name": "Ident",
+                    "visible": false,
+                    "width": "0px",
+                    "save": true
+                },
+                {
+                    "caption": "Index",
+                    "name": "Pos",
+                    "width": "100px",
+                    "save": true
+                },
+                {
+                    "caption": "Name",
+                    "name": "Name",
+                    "width": "180px",
+                    "save": true
+                },
+                {
+                    "caption": "Tibber Tag",
+                    "name": "Tag",
+                    "width": "auto",
+                    "save": true
+                },
+                {
+                    "caption": "Type",
+                    "name": "VarType",
+                    "visible": false,
+                    "width": "0px",
+                    "save": true
+                },
+                {
+                    "caption": "Profile",
+                    "name": "Profile",
+                    "visible": false,
+                    "width": "0px",
+                    "save": true
+                },
+                {
+                    "caption": "Faktor",
+                    "name": "Factor",
+                    "visible": false,
+                    "width": "0px",
+                    "save": true
+                },
+                {
+                    "caption": "Action",
+                    "name": "Action",
+                    "visible": false,
+                    "width": "0px",
+                    "save": true
+                },
+                {
+                    "caption": "Active",
+                    "name": "Keep",
+                    "width": "75px",
+                    "edit": {
+                        "caption": "Active",
+                        "type": "CheckBox"
+                    }
+                }
+                
+                    ]
+        }
+        
+        
+       
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "label": "Reset Variablen",
+            "onClick": "TIBBERRT_ResetVariables($id);"
+          }
+       
+    ],
+    "status": [
+        {
+            "code": 102,
+            "icon": "active",
+            "caption": "Settings OK"
+          },
+        {
+            "code": 201,
+            "icon": "error",
+            "caption": "Token fehlt"
+          },
+          {
+            "code": 202,
+            "icon": "error",
+            "caption": "Zuhause fehlt"
+          },
+          {
+            "code": 203,
+            "icon": "error",
+            "caption": "Kein Realtime-Zähler vorhanden"
+          },
+          {
+            "code": 210,
+            "icon": "error",
+            "caption": "Token ungültig"
+          }
+    ]
+}
