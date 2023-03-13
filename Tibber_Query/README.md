@@ -29,7 +29,7 @@ Die Abfrage erfolgt bei jedem ändern der Instanz, und wird dann per Timer je na
 Zu beginn jeder Stunde wird sowohl der aktuelle Preis und der von Tibber bereitgestellte Preislevel in die Variablen "Aktueller Preis" und "Aktueller Presi Level"
 
 ## 2. Systemanforderungen
-- IP-Symcon ab Version 5.5
+- IP-Symcon ab Version 6.0
 - Tibber Account
 - Tokern aus dem eigenen Tibber-Account
 

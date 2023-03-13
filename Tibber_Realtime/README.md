@@ -25,7 +25,7 @@ Es können folgende Informastionen in Echtzeit abgerufen werden:
 
 
 ## 2. Systemanforderungen
-- IP-Symcon ab Version 5.5
+- IP-Symcon ab Version 6.0
 - Tibber Account
 - Tokern aus dem eigenen Tibber-Account
 - Tibber Pulse Zähler der mit dem Tibber Account verknüpft ist
