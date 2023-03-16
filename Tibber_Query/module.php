@@ -229,7 +229,7 @@ declare(strict_types=1);
 				$var = 'PT60M_T0_'.$key;
 				$this->SetPriceVariables($var, $wa_price);
 				$result_array[] = [ 'Ident' => $var,
-									'Price' => $wa_price['total'],
+									'Price' => $wa_price['total'] * 100,
 									'Level' => $wa_price['level']];
 
 			}
@@ -239,7 +239,7 @@ declare(strict_types=1);
 				$var = 'PT60M_T1_'.$key;
 				$this->SetPriceVariables($var, $wa_price);
 				$result_array[] = [ 'Ident' => $var,
-									'Price' => $wa_price['total'],
+									'Price' => $wa_price['total'] * 100,
 									'Level' => $wa_price['level']];
 
 			}
@@ -367,7 +367,7 @@ declare(strict_types=1);
 		private function SetPriceVariables(string $var, array $wa_price)
 		{	
 			if ($this->ReadPropertyBoolean('Price_Variables')){
-				$this->setvalue($var, $wa_price['total'] );
+				$this->setvalue($var, $wa_price['total'] *100);
 			}
 		}
 

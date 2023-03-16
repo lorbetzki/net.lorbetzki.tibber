@@ -312,6 +312,12 @@ declare(strict_types=1);
 				IPS_SetVariableProfileDigits("Tibber.price.cent", 2);
 				IPS_SetVariableProfileText("Tibber.price.cent", "", " Cent");
 			}
+			if (!IPS_VariableProfileExists('Tibber.price.euro')) {
+				IPS_CreateVariableProfile('Tibber.price.euro', 2);
+				IPS_SetVariableProfileIcon('Tibber.price.euro', 'Euro');
+				IPS_SetVariableProfileDigits("Tibber.price.euro", 2);
+				IPS_SetVariableProfileText("Tibber.price.euro", "", " €");
+			}
 		}
 		private function OpenIO(){
 			if ($this->ReadPropertyBoolean('Active')){
@@ -419,7 +425,7 @@ declare(strict_types=1);
 				[ 6		,'accumulatedProduction'			, 'accumulatedProduction'			, VARIABLETYPE_FLOAT, 	'~Electricity'			,  1	, false, true],		//net kWh produced since midnight
 				[ 7		,'accumulatedConsumptionLastHour'	, 'accumulatedConsumptionLastHour'	, VARIABLETYPE_FLOAT, 	'~Electricity'			,  1	, false, true],		//kWh consumed since since last hour shift
 				[ 8		,'accumulatedProductionLastHour'	, 'accumulatedProductionLastHour'	, VARIABLETYPE_FLOAT, 	'~Electricity'			,  1	, false, true],		//net kWh produced since last hour shift
-				[ 9		,'accumulatedCost'					, 'accumulatedCost'					, VARIABLETYPE_FLOAT, 	''						,  1	, false, true],		//Accumulated cost since midnight; requires active Tibber power deal; includes VAT (where applicable)
+				[ 9		,'accumulatedCost'					, 'accumulatedCost'					, VARIABLETYPE_FLOAT, 	'Tibber.price.euro'		,  1	, false, true],		//Accumulated cost since midnight; requires active Tibber power deal; includes VAT (where applicable)
 				[ 10	,'minPower'							, 'minPower'						, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Min consumption since midnight (Watt)
 				[ 11	,'maxPower'							, 'maxPower'						, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Peak consumption since midnight (Watt)
 				[ 12	,'averagePower'						, 'averagePower'					, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//AAverage consumption since midnight (Watt)
