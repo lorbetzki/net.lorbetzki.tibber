@@ -429,6 +429,8 @@ declare(strict_types=1);
 				[ 10	,'minPower'							, 'minPower'						, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Min consumption since midnight (Watt)
 				[ 11	,'maxPower'							, 'maxPower'						, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Peak consumption since midnight (Watt)
 				[ 12	,'averagePower'						, 'averagePower'					, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//AAverage consumption since midnight (Watt)
-				[ 13	,'currency'							, 'currency'						, VARIABLETYPE_STRING, 	''						,  1	, false, true],		//Currency of displayed cost; requires active Tibber power dea				
+				[ 13	,'minPowerProduction'				, 'minPowerProduction'				, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Min net production since midnight (Watt)
+				[ 14	,'maxPowerProduction'				, 'maxPowerProduction'				, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Max net production since midnight (Watt)
+				[ 25	,'currency'							, 'currency'						, VARIABLETYPE_STRING, 	''						,  1	, false, true],		//Currency of displayed cost; requires active Tibber power dea				
 			];
 	}
