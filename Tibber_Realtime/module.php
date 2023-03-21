@@ -454,17 +454,17 @@ declare(strict_types=1);
 				[ 12	,'averagePower'						, 'averagePower'					, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//AAverage consumption since midnight (Watt)
 				[ 13	,'minPowerProduction'				, 'minPowerProduction'				, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Min net production since midnight (Watt)
 				[ 14	,'maxPowerProduction'				, 'maxPowerProduction'				, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Max net production since midnight (Watt)
-				[ 10	,'minPower'							, ''								, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//
-				[ 11	,'maxPower'							, ''								, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//
-				[ 15	,'powerReactive'					, 'powerReactive'					, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Reactive consumption (Q+) at the moment (kVAr)
-				[ 16	,'powerProductionReactive'			, 'powerProductionReactive'			, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Net reactive production (Q-) at the moment (kVAr)
-				[ 17	,'voltagePhase1'					, 'voltagePhase1'					, VARIABLETYPE_FLOAT, 	'~Volt'					,  1	, false, true],		//Voltage on phase 1
-				[ 18	,'voltagePhase2'					, 'voltagePhase2'					, VARIABLETYPE_FLOAT, 	'~Volt'					,  1	, false, true],		//Voltage on phase 2
-				[ 19	,'voltagePhase3'					, 'voltagePhase3'					, VARIABLETYPE_FLOAT, 	'~Volt'					,  1	, false, true],		//Voltage on phase 3
-				[ 20	,'currentL1'						, 'currentL1'						, VARIABLETYPE_FLOAT, 	'~Ampere'				,  1	, false, true],		//Current on L1
-				[ 21	,'currentL2'						, 'currentL2'						, VARIABLETYPE_FLOAT, 	'~Ampere'				,  1	, false, true],		//Current on L2
-				[ 22	,'currentL3'						, 'currentL3'						, VARIABLETYPE_FLOAT, 	'~Ampere'				,  1	, false, true],		//Current on L3
+				[ 15	,'minPower'							, ''								, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//
+				[ 16	,'maxPower'							, ''								, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//
+				[ 17	,'powerReactive'					, 'powerReactive'					, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Reactive consumption (Q+) at the moment (kVAr)
+				[ 18	,'powerProductionReactive'			, 'powerProductionReactive'			, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Net reactive production (Q-) at the moment (kVAr)
+				[ 19	,'voltagePhase1'					, 'voltagePhase1'					, VARIABLETYPE_FLOAT, 	'~Volt'					,  1	, false, true],		//Voltage on phase 1
+				[ 20	,'voltagePhase2'					, 'voltagePhase2'					, VARIABLETYPE_FLOAT, 	'~Volt'					,  1	, false, true],		//Voltage on phase 2
+				[ 21	,'voltagePhase3'					, 'voltagePhase3'					, VARIABLETYPE_FLOAT, 	'~Volt'					,  1	, false, true],		//Voltage on phase 3
+				[ 22	,'currentL1'						, 'currentL1'						, VARIABLETYPE_FLOAT, 	'~Ampere'				,  1	, false, true],		//Current on L1
+				[ 23	,'currentL2'						, 'currentL2'						, VARIABLETYPE_FLOAT, 	'~Ampere'				,  1	, false, true],		//Current on L2
+				[ 24	,'currentL3'						, 'currentL3'						, VARIABLETYPE_FLOAT, 	'~Ampere'				,  1	, false, true],		//Current on L3
 				[ 25	,'signalStrength'					, 'signalStrength'					, VARIABLETYPE_INTEGER,	''						,  1	, false, true],		//Device signal strength (Pulse - dB; Watty - percent)				
-				[ 25	,'currency'							, 'currency'						, VARIABLETYPE_STRING, 	''						,  1	, false, true],		//Currency of displayed cost; requires active Tibber power dea				
+				[ 30	,'currency'							, 'currency'						, VARIABLETYPE_STRING, 	''						,  1	, false, true],		//Currency of displayed cost; requires active Tibber power dea				
 			];
 	}
