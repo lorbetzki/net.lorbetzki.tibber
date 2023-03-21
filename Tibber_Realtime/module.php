@@ -208,10 +208,33 @@ declare(strict_types=1);
 
 			$Variables = json_decode($this->ReadPropertyString('Variables'), true);
 			foreach ($Variables as $pos => $Variable) {
-				if($Variable['Keep']){
+				if($Variable['Keep'] && $Variable['Tag'] != ''){
 					if (array_key_exists($Variable['Tag'], $payload['payload']['data']['liveMeasurement'])){
 						$this->SetValue($Variable['Ident'], $payload['payload']['data']['liveMeasurement'][$Variable['Tag']]);
 					}
+				}
+			}
+			$this->CalcMinMaxPower();
+		}
+
+		private function CalcMinMaxPower()
+		{
+			$Variables = json_decode($this->ReadPropertyString('Variables'), true);
+			foreach ($Variables as $pos => $Variable) {
+				if($Variable['Keep'] && $Variable['Ident'] == 'minPower'){
+					if ( !IPS_GetObjectIDByIdent($Variable['minPowerConsumption'], $this->InstanceID)) return;
+					if ( !IPS_GetObjectIDByIdent($Variable['maxPowerProduction'], $this->InstanceID)) return;
+					if ( $this->GetValue('maxPowerProduction') > $this->GetValue('minPowerConsumption') ){
+						$this->SetValue('minPower', $this->GetValue('maxPowerProduction') * -1);
+					}
+					else{
+						$this->SetValue('minPower', $this->GetValue('minPowerConsumption') );
+					}
+				}
+				if($Variable['Keep'] && $Variable['Ident'] == 'maxPower'){
+					if ( !IPS_GetObjectIDByIdent($Variable['maxPowerConsumption'], $this->InstanceID)) return;
+					if ( !IPS_GetObjectIDByIdent($Variable['minPowerProduction'], $this->InstanceID)) return;
+						$this->SetValue('maxPower', $this->GetValue('maxPowerConsumption') );		
 				}
 			}
 		}
@@ -377,7 +400,7 @@ declare(strict_types=1);
 			$tags =' ';
 			$Variables = json_decode($this->ReadPropertyString('Variables'), true);
 			foreach ($Variables as $pos => $Variable) {
-				if($Variable['Keep']){
+				if($Variable['Keep'] && $Variable['Tag'] != ''){
 					$tags .= $Variable['Tag'].' ';
 				}
 			}	
@@ -426,11 +449,13 @@ declare(strict_types=1);
 				[ 7		,'accumulatedConsumptionLastHour'	, 'accumulatedConsumptionLastHour'	, VARIABLETYPE_FLOAT, 	'~Electricity'			,  1	, false, true],		//kWh consumed since since last hour shift
 				[ 8		,'accumulatedProductionLastHour'	, 'accumulatedProductionLastHour'	, VARIABLETYPE_FLOAT, 	'~Electricity'			,  1	, false, true],		//net kWh produced since last hour shift
 				[ 9		,'accumulatedCost'					, 'accumulatedCost'					, VARIABLETYPE_FLOAT, 	'Tibber.price.euro'		,  1	, false, true],		//Accumulated cost since midnight; requires active Tibber power deal; includes VAT (where applicable)
-				[ 10	,'minPower'							, 'minPower'						, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Min consumption since midnight (Watt)
-				[ 11	,'maxPower'							, 'maxPower'						, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Peak consumption since midnight (Watt)
+				[ 10	,'minPowerConsumption'				, 'minPower'						, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Min consumption since midnight (Watt)
+				[ 11	,'maxPowerConsumption'				, 'maxPower'						, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Peak consumption since midnight (Watt)
 				[ 12	,'averagePower'						, 'averagePower'					, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//AAverage consumption since midnight (Watt)
 				[ 13	,'minPowerProduction'				, 'minPowerProduction'				, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Min net production since midnight (Watt)
 				[ 14	,'maxPowerProduction'				, 'maxPowerProduction'				, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Max net production since midnight (Watt)
+				[ 10	,'minPower'							, ''								, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//
+				[ 11	,'maxPower'							, ''								, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//
 				[ 15	,'powerReactive'					, 'powerReactive'					, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Reactive consumption (Q+) at the moment (kVAr)
 				[ 16	,'powerProductionReactive'			, 'powerProductionReactive'			, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Net reactive production (Q-) at the moment (kVAr)
 				[ 17	,'voltagePhase1'					, 'voltagePhase1'					, VARIABLETYPE_FLOAT, 	'~Volt'					,  1	, false, true],		//Voltage on phase 1
