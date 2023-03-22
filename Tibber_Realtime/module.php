@@ -222,8 +222,8 @@ declare(strict_types=1);
 			$Variables = json_decode($this->ReadPropertyString('Variables'), true);
 			foreach ($Variables as $pos => $Variable) {
 				if($Variable['Keep'] && $Variable['Ident'] == 'minPower'){
-					if ( !IPS_GetObjectIDByIdent($Variable['minPowerConsumption'], $this->InstanceID)) return;
-					if ( !IPS_GetObjectIDByIdent($Variable['maxPowerProduction'], $this->InstanceID)) return;
+					if ( !IPS_GetObjectIDByIdent('minPowerConsumption', $this->InstanceID)) return;
+					if ( !IPS_GetObjectIDByIdent('maxPowerProduction', $this->InstanceID)) return;
 					if ( $this->GetValue('maxPowerProduction') > $this->GetValue('minPowerConsumption') ){
 						$this->SetValue('minPower', $this->GetValue('maxPowerProduction') * -1);
 					}
@@ -232,8 +232,8 @@ declare(strict_types=1);
 					}
 				}
 				if($Variable['Keep'] && $Variable['Ident'] == 'maxPower'){
-					if ( !IPS_GetObjectIDByIdent($Variable['maxPowerConsumption'], $this->InstanceID)) return;
-					if ( !IPS_GetObjectIDByIdent($Variable['minPowerProduction'], $this->InstanceID)) return;
+					if ( !IPS_GetObjectIDByIdent('maxPowerConsumption', $this->InstanceID)) return;
+					if ( !IPS_GetObjectIDByIdent('minPowerProduction', $this->InstanceID)) return;
 						$this->SetValue('maxPower', $this->GetValue('maxPowerConsumption') );		
 				}
 			}
