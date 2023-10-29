@@ -1,12 +1,12 @@
 {
     "id": "{009BAE4A-6A6A-8E0A-09CF-C0178B27B2CE}",
     "name": "Tibber",
-    "author": "Philipp Hirzel",
-    "url": "",
+    "author": "Krstian Lorbetzki, Philipp Hirzel",
+    "url": "https://github.com/lorbetzki/net.lorbetzki.tibber.git",
     "compatibility": {
-        "version": "5.5"
+        "version": "6.0"
     },
-    "version": "1.0",
-    "build": 0,
+    "version": "1.1",
+    "build": 20231029,
     "date": 0
 }

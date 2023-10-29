@@ -45,6 +45,7 @@ declare(strict_types=1);
 			}
 			if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == ''){
 				$this->SetStatus(202); // Kein Zuhause
+				$this->GetHomesData();
             	return false;
 			}
 
@@ -124,7 +125,27 @@ declare(strict_types=1);
 					$day  = substr($wa_price["Ident"],6,2);
 					if ( $hour == $h && $day == 'T0'){
 						$this->SetValue('act_price' , $wa_price["Price"]);	
-						$this->SetValue('act_level' , $wa_price["Level"]);	
+
+						switch($wa_price["Level"])
+						{
+							case "VERY_CHEAP":
+								$PRICE_LVL = 1;
+							break;
+							case "CHEAP":
+								$PRICE_LVL = 2;
+							break;
+							case "NORMAL":
+								$PRICE_LVL = 3;
+							break;
+							case "":
+								$PRICE_LVL = 4;
+							break;
+							case "VERY_EXPENSIVE":
+								$PRICE_LVL = 5;
+							break;
+						}
+
+						$this->SetValue('act_level', $PRICE_LVL );	
 					}
 				}
 				$this->SetUpdateTimerActualPrice();
@@ -157,6 +178,7 @@ declare(strict_types=1);
 					$value[] = ["caption"=> $home["appNickname"], "value"=> $home["id"] ];
 				}
 			$jsonform["elements"][1]['items'][0]["options"] = $value;
+			$jsonform["elements"][1]['items'][0]["visible"] = true;
 			IPS_SetProperty($this->InstanceID, 'Home_ID', $value[0]["value"] );
 			return json_encode($jsonform);
 		}
@@ -451,7 +473,7 @@ declare(strict_types=1);
 			}
 			//$this->RegisterVariableFloat("hourly_consumption", 'Stündlicher Verbrauch', "", 0);
 			$this->RegisterVariableFloat("act_price", 'Aktueller Preis', 'Tibber.price.cent', 0);
-			$this->RegisterVariableString("act_level", 'Aktueller Preis Level', '', 0);
+			$this->RegisterVariableInteger("act_level", 'Aktueller Preis Level', 'Tibber.price.level', 0);
 			$this->RegisterVariableFloat("Ahead_Price", 'Day Ahead Preis', 'Tibber.price.cent', 0);
 			$this->RegisterVariableBoolean("RT_enabled", 'Realtime verfügbar', '', 0);
 
@@ -472,5 +494,15 @@ declare(strict_types=1);
 				IPS_SetVariableProfileDigits("Tibber.price.cent", 2);
 				IPS_SetVariableProfileText("Tibber.price.cent", "", " Cent");
 			}
+			
+			if (!IPS_VariableProfileExists('Tibber.price.level')) {
+				IPS_CreateVariableProfile('Tibber.price.level', 1);
+				IPS_SetVariableProfileAssociation('Tibber.price.level', 1, $this->Translate('very cheap'), '', 0x00FF00);
+				IPS_SetVariableProfileAssociation('Tibber.price.level', 2, $this->Translate('cheap'), '', 0x008000);
+				IPS_SetVariableProfileAssociation('Tibber.price.level', 3, $this->Translate('normal'), '', 0xFFFF00);
+				IPS_SetVariableProfileAssociation('Tibber.price.level', 4, $this->Translate('expensive'), '', 0xFF8000);
+				IPS_SetVariableProfileAssociation('Tibber.price.level', 5, $this->Translate('very expensive'), '', 0xFF0000);
+			}
+			
 		}
 	}

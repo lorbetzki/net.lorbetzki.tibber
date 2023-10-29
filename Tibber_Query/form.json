@@ -14,13 +14,15 @@
                     "type": "Select",
                     "name": "Home_ID",
                     "caption": "Home ID",
+                    "visible": false,
                     "options": [ {"caption" : "", "value":""}]
                 },
                 {
                     "type": "Button",
                     "label": "Zuhause abrufen",
                     "onClick": "TIBBER_GetHomesData($id);",
-                    "enabled": true
+                    "enabled": true,
+                    "visible": false
                     }
             ]
         },
@@ -68,6 +70,11 @@
             "type": "Button",
             "label": "Preisdaten abrufen",
             "onClick": "TIBBER_GetPriceData($id);"
+          },
+          {
+            "type": "Button",
+            "label": "Zuhause abrufen",
+            "onClick": "TIBBER_GetHomesData($id);;"
           }
     ],
     "status": [

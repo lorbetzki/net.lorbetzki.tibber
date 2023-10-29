@@ -1,5 +1,7 @@
 ### IP-Symcon Modul Library: Tibber
  
+Diese Modul wurde von Philipp Hirzel entwickelt aufgrund von Zeitmangel aber nicht veröffentlicht. Dankenswerterweise durfte ich das Modul übernehmen und der Symcon Community zur Verfügung stellen.
+  
 Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr.
 
 ## Dokumentation
@@ -27,8 +29,7 @@ Einen genauen Funktionsumfang des jeweiligen Moduls wird in der Modul Readme det
 
 ## 3. Installation
 
-Die Installation erfolgt über den Symcon Module Store. Einfach nnach "Tibber" suchen.
-!! Momentan ist das Modul nur im internen Testkanal für Funktionstests vorhanden!!!
+Die Installation erfolgt über den Symcon Module Store. Einfach nach "Tibber" suchen.
 
 ## 4. Module
 

@@ -19,10 +19,36 @@ Es handelt sich hierbei um einen frühen Entwicklungsstand.
 Mit diesem Modul können die Informationen abgerufen werden welche von der Tibber Realtime API (WSS Stream) bereit gestellt werden.
 
 ### 1.1 Aktuelle Zählerwerte
-Es können folgende Informastionen in Echtzeit abgerufen werden:
+Es können folgende Informastionen in Echtzeit abgerufen werden, sofern vom Zähler auch unterstützt:
 
-- Wird ergänzt
-
+Name     | Beschreibung
+-------- | ------------------
+Aktuelle Leistung Bezug |
+Aktuelle Leistung Einspeisung |
+Zählerstand Bezug |
+Zählerstand Einspeisung |
+Verbrauch des aktuellen Tages |
+Produktion des aktuellen Tages |
+Verbrauch der aktuellen Stunde |
+Produktion der aktuellen Stunde |
+Kosten des aktuellen Tages |
+minimale Bezugs-Leistung des Tages |
+maximale Bezugs-Leistung des Tages |
+minimale Leistung des Tages |
+maximale Leistung des Tages |
+durchschnittliche Leistung des Tages |
+minimale Produktions-Leistung des Tages |
+maximale Produktions-Leistung des Tages |
+Blindleistung |
+Produktions-Blindleistung  |
+Spannung Phase 1 |
+Spannung Phase 2 |
+Spannung Phase 3 |
+Stromstärke Phase 1 |
+Stromstärke Phase 2 |
+Stromstärke Phase 3 |
+Signalstärke Zähler |
+Währung |
 
 ## 2. Systemanforderungen
 - IP-Symcon ab Version 6.0

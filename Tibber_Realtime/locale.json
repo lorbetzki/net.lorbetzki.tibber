@@ -17,7 +17,7 @@
             "averagePower": "durchschnittliche Leistung des Tages",
             "minPowerProduction": "minimale Produktions-Leistung des Tages",
             "maxPowerProduction": "maximale Produktions-Leistung des Tages",
-            "powerReactive": "Blindlesitung",
+            "powerReactive": "Blindleistung",
             "powerProductionReactive": "Produktions-Blindleistung",
             "voltagePhase1": "Spannung Phase 1",
             "voltagePhase2": "Spannung Phase 2",
