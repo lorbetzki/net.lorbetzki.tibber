@@ -5,7 +5,29 @@
             "very cheap": "sehr günstig",
             "normal": "normal",
             "expensive": "teuer",
-            "very expensive": "sehr teuer"
+            "very expensive": "sehr teuer",
+            "activate Instance": "aktiviere Instanz",
+            "actual price":"Aktueller Preis",
+            "actual price level":"Aktueller Preis Level",
+            "day ahead price":"Day Ahead Preis",
+            "realtime available":"Realtime verfügbar",
+            "Price_Array":"Preis_Array",
+            "Today": "Heute",
+            "Tomorrow":"Morgen",
+            "to": "bis",
+            "h": "Uhr",
+            "User-Token":"Benutzer-Token",
+            "Select Home":"Heim auswählen",
+            "Logging consumption data":"Verbrauchsdaten Loggen",
+            "Price Data -> Variable Settings":"Preis Daten -> Variablen Einstellungen",
+            "Log price data variable":"Preisdatenvariable loggen",
+            "Price - create variables per hour (24 for current day & 24 for day ahead day)":"Preis - Variablen pro Stunde anlegen (24 für aktuellen Tag & 24 für Day Ahead Tag)",
+            "Price - Create array -> For use in scripts and other modules":"Preis - Array anlegen -> Zur Nutzung in Scripten und anderen Modulen",
+            "Retrieve price data":"Preisdaten abrufen",
+            "Retrieve Home ID":"Heim ID abrufen",
+            "Please insert Token":"Bitte Token einfügen",
+            "Home ID not available or selected":"Home ID nicht Verfügbar oder ausgewählt",
+            "Token invalid":"Token ungültig"
         }
     }
 }

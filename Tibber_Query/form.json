@@ -13,7 +13,7 @@
                 {
                     "type": "Select",
                     "name": "Home_ID",
-                    "caption": "Home ID",
+                    "caption": "Select Home",
                     "visible": false,
                     "options": [ {"caption" : "", "value":""}]
                 },
@@ -21,19 +21,19 @@
                     "type": "Button",
                     "label": "Zuhause abrufen",
                     "onClick": "TIBBER_GetHomesData($id);",
-                    "enabled": true,
+                    "enabled": false,
                     "visible": false
                     }
             ]
         },
         {   "type": "CheckBox",
             "name": "Consumption_log",
-            "caption": "Verbrauchsdaten Loggen",
+            "caption": "Logging consumption data",
             "visible": false
         },
         {
             "type": "ExpansionPanel",
-            "caption": "Preis Daten -> Variablen Einstellungen",
+            "caption": "Price Data -> Variable Settings",
             "expanded": true,
             "items": [
                     { 
@@ -41,16 +41,16 @@
                         "items": [
                             {   "type": "CheckBox",
                                 "name": "Price_log",
-                                "caption": "Preisdatenvarible Loggen",
+                                "caption": "Log price data variable",
                                 "visible": true,
-                                "enabled":true
+                                "enabled": true
                             }
                         ]
                     },
                     
                     {   "type": "CheckBox",
                         "name": "Price_Variables",
-                        "caption": "Preis - Variablen pro Stunde anlegen ( 24 für aktuellen Tag & 24 für Day Ahead Tag )",
+                        "caption": "Price - create variables per hour (24 for current day & 24 for day ahead day)",
                         "visible": true
                     },
                     {   "type": "CheckBox",
@@ -59,44 +59,41 @@
                         "visible": false
                     }
                 ]
+        },
+        {   "type": "CheckBox",
+            "name": "InstanceActive",
+            "caption": "activate Instance"
         }
-
-
-       
+           
     ],
     "actions": [
        
         {
             "type": "Button",
-            "label": "Preisdaten abrufen",
+            "label": "Retrieve price data",
             "onClick": "TIBBER_GetPriceData($id);"
           },
           {
             "type": "Button",
-            "label": "Zuhause abrufen",
-            "onClick": "TIBBER_GetHomesData($id);;"
+            "label": "Retrieve Home ID",
+            "onClick": "TIBBER_GetHomesData($id);"
           }
     ],
     "status": [
         {
-            "code": 102,
-            "icon": "active",
-            "caption": "Settings OK"
-          },
-        {
             "code": 201,
             "icon": "error",
-            "caption": "Token fehlt"
+            "caption": "Please insert Token"
           },
           {
             "code": 202,
             "icon": "error",
-            "caption": "Zuhause fehlt"
+            "caption": "Home ID not available or selected"
           },
           {
             "code": 210,
             "icon": "error",
-            "caption": "Token ungültig"
+            "caption": "Token invalid"
           }
     ]
 }

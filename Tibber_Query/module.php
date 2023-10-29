@@ -8,6 +8,7 @@ declare(strict_types=1);
 			//Never delete this line!
 			parent::Create();
 
+			$this->RegisterPropertyBoolean("InstanceActive", true);
 			$this->RegisterPropertyString("Token", '');
 			$this->RegisterPropertyString("Home_ID",'');
 			$this->RegisterPropertyString("Api", 'https://api.tibber.com/v1-beta/gql');
@@ -15,7 +16,7 @@ declare(strict_types=1);
 			$this->RegisterPropertyBoolean("DayAhead_Chart", false);
 			$this->RegisterPropertyBoolean("Consumption_log", false);
 			$this->RegisterPropertyBoolean("Price_Variables", false);
-			$this->RegisterPropertyBoolean("Price_Array", false);
+			$this->RegisterPropertyBoolean("Price_Array", true);
 			
 			$this->RegisterAttributeString("Homes", "");
 			$this->RegisterAttributeString("Price_Array", '');
@@ -49,15 +50,20 @@ declare(strict_types=1);
             	return false;
 			}
 
-			
-
-			$this->SetStatus(102);
 			$this->RegisterProfiles();
 			$this->RegisterVariables();
 			$this->CheckRealtimeEnabled();
 			$this->GetPriceData();
 			$this->SetActualPrice();
 
+			if ($this->ReadPropertyBoolean("InstanceActive"))
+			{
+				$this->SetStatus(102); // instanz aktiveren
+			}
+			else
+			{
+				$this->SetStatus(104); // instanz deaktiveren
+			}
 		}
 		public function GetHomesData()
 		{
@@ -159,7 +165,6 @@ declare(strict_types=1);
 			$result = $this->CallTibber($request);
 			if (!$result) return;		//Bei Fehler abbrechen
 			$result_ar = json_decode($result, true);
-
 			$this->SetValue('RT_enabled',$result_ar['data']['viewer']['home']['features']['realTimeConsumptionEnabled']);
 
 		}
@@ -193,7 +198,6 @@ declare(strict_types=1);
 
 			$this->SendDebug("Consumption_Result", $result, 0);
 			//$this->process_consumption_data($result, $timing);
-
 		}
 
 		private function ProcessConsumptionData(string $result, string $timing)
@@ -348,7 +352,6 @@ declare(strict_types=1);
 			}
 		}
 
-
 		private function SetLogging()
 		{
 			$archive_handler = '{43192F0B-135B-4CE7-A0A7-1475603F3060}';  //ARchive Handler ermitteln
@@ -416,7 +419,14 @@ declare(strict_types=1);
 				}
 			}
 			$timer_new = $time_new - time();
-			$this->SetTimerInterval("UpdateTimerPrice", $timer_new * 1000);
+			if ($this->ReadPropertyBoolean("InstanceActive"))
+			{
+				$this->SetTimerInterval("UpdateTimerPrice", $timer_new * 1000);
+			}
+			else
+			{
+				$this->SetTimerInterval("UpdateTimerPrice", 0);
+			}
 			$this->SendDebug('Price Timer - Rundate', date('c', $time_new),0);
 			$this->SendDebug('Price Timer - Run in sec', $timer_new ,0);
 		}
@@ -431,7 +441,14 @@ declare(strict_types=1);
 				$time_new = mktime(0, 0, 10, intval( date("m") ) , intval(date("d")+1), intval(date("Y")));
 			}
 			$timer_new = $time_new - time();
-			$this->SetTimerInterval("UpdateTimerActPrice", $timer_new * 1000);
+			if ($this->ReadPropertyBoolean("InstanceActive"))
+			{
+				$this->SetTimerInterval("UpdateTimerActPrice", $timer_new * 1000);
+			}
+			else
+			{
+				$this->SetTimerInterval("UpdateTimerActPrice", 0);
+			}
 			$this->SendDebug('Act-Price Timer - Rundate', date('c', $time_new),0);
 			$this->SendDebug('Act-Price Timer - Run in sec', $timer_new ,0);
 		}
@@ -442,9 +459,8 @@ declare(strict_types=1);
 			$date_new = mktime(0, 0, 01, intval( date("m") ) , intval(date("d")+1), intval(date("Y")));
 			$act_date = time();
 			return $date_new - $act_date;
-
-
 		}
+
 		private function CalcNewHour()
 		{
 			date_default_timezone_set('Europe/Berlin');
@@ -458,28 +474,48 @@ declare(strict_types=1);
 			}
 			$act_date = time();
 			return $date_new - $act_date;
-
-
 		}
+		
 		private function RegisterVariables()
 		{
 			if ($this->ReadPropertyBoolean('Price_Variables')){
 				for ($i = 0; $i <= 23; $i++) {
-					$this->RegisterVariableFloat("PT60M_T0_" . $i, "Heute " . $i . " bis " . ($i + 1) . " Uhr", "Tibber.price.cent", 20 + $i);
+					$this->RegisterVariableFloat("PT60M_T0_" . $i, $this->Translate('Today')." ". $i ." ". $this->Translate('to')." ". ($i + 1) . " ". $this->Translate('h'), "Tibber.price.cent", 20 + $i);
 				}
 				for ($i = 0; $i <= 23; $i++) {
-					$this->RegisterVariableFloat("PT60M_T1_" . $i, "Morgen " . $i . " bis " . ($i + 1) . " Uhr", "Tibber.price.cent", 50 + $i);
+					$this->RegisterVariableFloat("PT60M_T1_" . $i, $this->Translate('Tomorrow')." ". $i ." ". $this->Translate('to')." ". ($i + 1) . " ". $this->Translate('h'), "Tibber.price.cent", 50 + $i);
+				}
+			} 
+			else
+			{
+				for ($i = 0; $i <= 23; $i++) {
+
+					if (@$this->GetIDForIdent("PT60M_T0_" . $i))
+					{
+						$this->UnregisterVariable("PT60M_T0_" . $i);
+					}
+				}
+				for ($i = 0; $i <= 23; $i++) {
+					if (@$this->GetIDForIdent("PT60M_T1_" . $i))
+					{
+						$this->UnregisterVariable("PT60M_T1_" . $i);
+					}
 				}
 			}
 			//$this->RegisterVariableFloat("hourly_consumption", 'Stündlicher Verbrauch', "", 0);
-			$this->RegisterVariableFloat("act_price", 'Aktueller Preis', 'Tibber.price.cent', 0);
-			$this->RegisterVariableInteger("act_level", 'Aktueller Preis Level', 'Tibber.price.level', 0);
-			$this->RegisterVariableFloat("Ahead_Price", 'Day Ahead Preis', 'Tibber.price.cent', 0);
-			$this->RegisterVariableBoolean("RT_enabled", 'Realtime verfügbar', '', 0);
+			$this->RegisterVariableFloat("act_price", $this->Translate('actual price'), 'Tibber.price.cent', 0);
+			$this->RegisterVariableInteger("act_level", $this->Translate('actual price level'), 'Tibber.price.level', 0);
+			$this->RegisterVariableFloat("Ahead_Price", $this->Translate('day ahead price'), 'Tibber.price.cent', 0);
+			$this->RegisterVariableBoolean("RT_enabled", $this->Translate('realtime available'), '', 0);
 
-			$this->RegisterVariableString("Price_Array"		, "Preis_Array", "", 0 );
+			if ($this->ReadPropertyBoolean('Price_Array')){
+				$this->RegisterVariableString("Price_Array", $this->Translate('Price_Array'), "", 0 );
+			}
+			else
+			{
+				$this->UnregisterVariable("Price_Array");
+			}
 
-			
 			if ($this->ReadPropertyBoolean('Price_log') == true){
 				$this->SetLogging();
 			}
