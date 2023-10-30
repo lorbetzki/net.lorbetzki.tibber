@@ -16,7 +16,7 @@ declare(strict_types=1);
 			$this->RegisterPropertyBoolean("DayAhead_Chart", false);
 			$this->RegisterPropertyBoolean("Consumption_log", false);
 			$this->RegisterPropertyBoolean("Price_Variables", false);
-			$this->RegisterPropertyBoolean("Price_Array", true);
+			$this->RegisterPropertyBoolean("Price_Array", false);
 			
 			$this->RegisterAttributeString("Homes", "");
 			$this->RegisterAttributeString("Price_Array", '');
@@ -129,8 +129,10 @@ declare(strict_types=1);
 				foreach ( $prices as $wa_price ){
 					$hour = substr($wa_price["Ident"],9);
 					$day  = substr($wa_price["Ident"],6,2);
+
 					if ( $hour == $h && $day == 'T0'){
 						$this->SetValue('act_price' , $wa_price["Price"]);	
+						$PRICE_LVL = 0;
 
 						switch($wa_price["Level"])
 						{
@@ -143,7 +145,7 @@ declare(strict_types=1);
 							case "NORMAL":
 								$PRICE_LVL = 3;
 							break;
-							case "":
+							case "EXPENSIVE":
 								$PRICE_LVL = 4;
 							break;
 							case "VERY_EXPENSIVE":
@@ -154,6 +156,7 @@ declare(strict_types=1);
 						$this->SetValue('act_level', $PRICE_LVL );	
 					}
 				}
+
 				$this->SetUpdateTimerActualPrice();
 			}
 		}
@@ -285,7 +288,10 @@ declare(strict_types=1);
 			}
 			
        		$this->WriteAttributeString("Price_Array", json_encode($result_array));
-			$this->SetValue("Price_Array", json_encode($result_array));
+			if ($this->ReadPropertyBoolean('Price_Array'))
+			{
+				$this->SetValue("Price_Array", json_encode($result_array));
+			}			
 			if ($this->ReadPropertyBoolean('Price_log') == true){
 				$this->LogAheadPrices($result_array);
 			}
@@ -505,11 +511,10 @@ declare(strict_types=1);
 			//$this->RegisterVariableFloat("hourly_consumption", 'Stündlicher Verbrauch', "", 0);
 			$this->RegisterVariableFloat("act_price", $this->Translate('actual price'), 'Tibber.price.cent', 0);
 			$this->RegisterVariableInteger("act_level", $this->Translate('actual price level'), 'Tibber.price.level', 0);
-			$this->RegisterVariableFloat("Ahead_Price", $this->Translate('day ahead price'), 'Tibber.price.cent', 0);
 			$this->RegisterVariableBoolean("RT_enabled", $this->Translate('realtime available'), '', 0);
 
 			if ($this->ReadPropertyBoolean('Price_Array')){
-				$this->RegisterVariableString("Price_Array", $this->Translate('Price_Array'), "", 0 );
+				$this->RegisterVariableString("Price_Array", $this->Translate('Price Array'), "", 0 );
 			}
 			else
 			{
@@ -517,6 +522,7 @@ declare(strict_types=1);
 			}
 
 			if ($this->ReadPropertyBoolean('Price_log') == true){
+				$this->RegisterVariableFloat("Ahead_Price", $this->Translate('day ahead price helper variable'), 'Tibber.price.cent', 0);
 				$this->SetLogging();
 			}
 			
@@ -533,6 +539,7 @@ declare(strict_types=1);
 			
 			if (!IPS_VariableProfileExists('Tibber.price.level')) {
 				IPS_CreateVariableProfile('Tibber.price.level', 1);
+				IPS_SetVariableProfileAssociation('Tibber.price.level', 0, '-', '', 0xFFFFFF);
 				IPS_SetVariableProfileAssociation('Tibber.price.level', 1, $this->Translate('very cheap'), '', 0x00FF00);
 				IPS_SetVariableProfileAssociation('Tibber.price.level', 2, $this->Translate('cheap'), '', 0x008000);
 				IPS_SetVariableProfileAssociation('Tibber.price.level', 3, $this->Translate('normal'), '', 0xFFFF00);

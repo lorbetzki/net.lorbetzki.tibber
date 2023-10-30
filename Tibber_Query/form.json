@@ -56,7 +56,7 @@
                     {   "type": "CheckBox",
                         "name": "Price_Array",
                         "caption": "Preis - Array anlegen -> Zur Nutzung in Scripten und anderen Modulen",
-                        "visible": false
+                        "visible": true
                     }
                 ]
         },

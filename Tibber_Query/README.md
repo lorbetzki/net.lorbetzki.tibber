@@ -20,19 +20,18 @@ Mit diesem Modul können die Informationen abgerufen werden welche von der Tibbe
 
 ### 1.1 Day Ahead Preise
 
-Das Modul frägt die Day Ahead Preise für den aktuellen und (wenn schon publiziert) für den Folgetag ab und speichert dies rückwirkend (da Symcon keine zukünftigen Werte im Archiv erlaubt) in der "Day Ahead Preis" Variablen ab. Dabei wird der aktuelle Tag mit T -2 und der morgige Tag mit T -1 ins Archiv gespeichert.
+Das Modul fragt die Day Ahead Preise für den aktuellen und (wenn schon publiziert) für den Folgetag ab und speichert dies rückwirkend (da Symcon keine zukünftigen Werte im Archiv erlaubt) in der "Day Ahead Preis Hilfsvariable" Variablen ab. Dabei wird der aktuelle Tag mit T -2 und der morgige Tag mit T -1 ins Archiv gespeichert.
 Zusätzlich wird automatisch ein Multi-Chart angelegt, welcher diese beiden Tage im stündlichen Vergleich über die beiden Tagen darstellt.
 
-Die Abfrage erfolgt bei jedem ändern der Instanz, und wird dann per Timer je nach aktueller Zeit auf 0:00 Uhr oder wenn vor 13 Uhr am Tag auf 13 Uhr getzt. Da nicht jeden Tag um 13 Uhr die Werte des Folgetages schon veröffentlicht sind, prüft das Modul ob schon Werte für den Folgetag vorhanden sind. Ist das nicht der Fall wird ein neuer Abruf 5 Minuten später erneut eingeplant. Die wird wiederholt bis die Werte geliefert qwurden.
+Die Abfrage erfolgt bei jedem ändern der Instanz und wird dann per Timer je nach aktueller Zeit auf 0:00 Uhr oder wenn vor 13 Uhr am Tag auf 13 Uhr getzt. Da nicht jeden Tag um 13 Uhr die Werte des Folgetages schon veröffentlicht sind, prüft das Modul ob schon Werte für den Folgetag vorhanden sind. Ist das nicht der Fall wird ein neuer Abruf 5 Minuten später erneut eingeplant. Die wird wiederholt bis die Werte geliefert wurden.
 
 ### 1.1.1 Aktueller Stundenpreis & Preislevel
-Zu beginn jeder Stunde wird sowohl der aktuelle Preis und der von Tibber bereitgestellte Preislevel in die Variablen "Aktueller Preis" und "Aktueller Presi Level"
+Zu beginn jeder Stunde wird sowohl der aktuelle Preis und der von Tibber bereitgestellte Preislevel in die Variablen "Aktueller Preis" und "Aktueller Preis Level"
 
 ## 2. Systemanforderungen
 - IP-Symcon ab Version 6.0
 - Tibber Account
-- Tokern aus dem eigenen Tibber-Account
-
+- Token aus dem eigenen Tibber-Account
 
 ## 3. Installation
 
@@ -43,7 +42,7 @@ Das Modul ist Bestandteil der Tibber Library und wird somit bei der Installation
 Nach dem anlegen der Instanz muss die Instanz konfiguriert werden.
 Dazu muss der Token (aus dem Tibber Account) eingetragen werden. Danach muss die Änderung der Instanz gespeichert werden.
 
-Ist dies geschehen, kann über den Button "Zuhauser abrufen" die Liste der im Tibber Account vorhanden Häuser abgerufen werden, welche im "Home ID" Feld dann zur Auswahl bereit gestellt werden.
+Ist dies geschehen, wird automatisiert die Liste der im Tibber Account vorhanden Häuser abgerufen, welche im "Heim ID" Feld dann zur Auswahl bereit gestellt werden.
 Hier dann das gewünschte Haus auswählen.
 
 ### 4.1 Preisdaten Einstellungen
