@@ -1,8 +1,8 @@
 ### IP-Symcon Modul Library: Tibber
  
-Diese Modul wurde von Philipp Hirzel entwickelt aufgrund von Zeitmangel aber nicht veröffentlicht. Dankenswerterweise durfte ich das Modul übernehmen und der Symcon Community zur Verfügung stellen.
+Diese Modul wurde von Philipp Hirzel entwickelt aufgrund von Zeitmangel aber leider nicht veröffentlicht. Dankenswerterweise durfte ich das Modul übernehmen und der Symcon Community zur Verfügung stellen. Bei Fragen oder Wünnsche, gerne Meldung an mich.
   
-Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr.
+Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr. 
 
 ## Dokumentation
 
@@ -12,20 +12,19 @@ Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr.
 2. [Systemanforderungen](#2-systemanforderungen)
 3. [Installation](#3-installation)
 4. [Module](#4-module)
-5. [ChangeLog](#5-changelog)
 
 ## 1. Funktionsumfang
 
 Es handelt sich hierbei um einen frühen Entwicklungsstand.
 
-Die Tibber Library stellt 2 Module zur verfügung mit denen die Tibber Query API und die Tibber Realtime API abgefragt werden können.
+Die Tibber Library stellt 2 Module zur verfügung mit denen die "Tibber Query API" und die "Tibber Realtime API" abgefragt werden können.
 
 Einen genauen Funktionsumfang des jeweiligen Moduls wird in der Modul Readme detailiert beschrieben
 
 ## 2. Systemanforderungen
 - IP-Symcon ab Version 6.0
 - Tibber Account
-- Tibber Pulse für Realtime Daten
+- optional: Tibber Pulse für Realtime Daten
 
 ## 3. Installation
 
@@ -43,9 +42,4 @@ Genaue Infos sind in der Modul Readme vorhanden
 Mit dem Tibber Realtime Modul kann der Realtime-Stream von Tibber abgefragt werde wenn ein Tibber Pulse Zähler im Tibber-Account verknüpft ist.
 Genaue Infos sind in der Modul Readme vorhanden
 
-## 5. ChangeLog
-Änderungshistorie
-
-### Version 0.1 Test
-* Initialer Commit
   

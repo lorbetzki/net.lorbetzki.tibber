@@ -1,5 +1,6 @@
 # IP-Symcon Modul: Tibber Query
  
+Es handelt sich hierbei um einen frühen Entwicklungsstand.
 Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr.
 
 ## Dokumentation
@@ -10,11 +11,8 @@ Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr.
 2. [Systemanforderungen](#2-systemanforderungen)
 3. [Installation](#3-installation)
 4. [Einrichten der Instanz](#4-einrichten-der-instanz)
-5. [ChangeLog](#5-changelog)
 
 ## 1. Funktionsumfang
-
-Es handelt sich hierbei um einen frühen Entwicklungsstand.
 
 Mit diesem Modul können die Informationen abgerufen werden welche von der Tibber Query API bereitgestellt werden. Folgende Informationen sind im Modul implementiert:
 
@@ -40,7 +38,7 @@ Das Modul ist Bestandteil der Tibber Library und wird somit bei der Installation
 ## 4. Einrichten der Instanz
 
 Nach dem anlegen der Instanz muss die Instanz konfiguriert werden.
-Dazu muss der Token (aus dem Tibber Account) eingetragen werden. Danach muss die Änderung der Instanz gespeichert werden.
+Dazu muss der Token (aus dem Tibber Account) eingetragen und die Änderung der Instanz gespeichert werden.
 
 Ist dies geschehen, wird automatisiert die Liste der im Tibber Account vorhanden Häuser abgerufen, welche im "Heim ID" Feld dann zur Auswahl bereit gestellt werden.
 Hier dann das gewünschte Haus auswählen.
@@ -53,9 +51,3 @@ Diese Checkbox muss aktiviert werden, wenn die Day Ahead Preise im Archiv gespei
 #### 4.1.2 Preisdatenvariablen pro Stunde anlegen
 Wird diese Checkbox aktivert, werden 48 Variablen ( 24 für den aktuellen Tag und 24 für den Folgetag) für jede Stunde angelegt, welche beim Abruf der Day Ahead Preise aktulaisert werden.
 
-## 5. ChangeLog
-Änderungshistorie
-
-### Version 0.1 Test
-* Initialer Commit
-  

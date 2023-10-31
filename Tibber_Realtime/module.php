@@ -60,6 +60,7 @@ declare(strict_types=1);
 			}
 			if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == ''){
 				$this->SetStatus(202); // no  Home selected
+				$this->GetHomesData();
 				$this->CloseIO();
             	return false;
 			}

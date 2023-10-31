@@ -524,8 +524,7 @@ declare(strict_types=1);
 			if ($this->ReadPropertyBoolean('Price_log') == true){
 				$this->RegisterVariableFloat("Ahead_Price", $this->Translate('day ahead price helper variable'), 'Tibber.price.cent', 0);
 				$this->SetLogging();
-			}
-			
+			}	
 		}
 
 		private function RegisterProfiles()

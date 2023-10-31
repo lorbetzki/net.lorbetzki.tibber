@@ -3,7 +3,7 @@
     [
         {   "type": "CheckBox",
             "name": "Active",
-            "caption": "Realtime Stream aktiv",
+            "caption": "Realtime stream active",
             "enabled": true
         },
 
@@ -19,13 +19,15 @@
                 {
                     "type": "Select",
                     "name": "Home_ID",
-                    "caption": "Home ID",
+                    "caption": "Select Home",
                     "options": [ {"caption" : "", "value":""}]
                 },
                 {
                     "type": "Button",
                     "label": "Zuhause abrufen",
-                    "onClick": "TIBBERRT_GetHomesData($id);"
+                    "onClick": "TIBBERRT_GetHomesData($id);",
+                    "enable": false,
+                    "visible": false
                     }
             ]
         },
@@ -115,34 +117,33 @@
             "type": "Button",
             "label": "Reset Variablen",
             "onClick": "TIBBERRT_ResetVariables($id);"
-          }
-       
+          },
+          {
+            "type": "Button",
+            "label": "Retrieve Home ID",
+            "onClick": "TIBBERRT_GetHomesData($id);"
+          }       
     ],
     "status": [
         {
-            "code": 102,
-            "icon": "active",
-            "caption": "Settings OK"
-          },
-        {
             "code": 201,
             "icon": "error",
-            "caption": "Token fehlt"
+            "caption": "Please insert Token"
           },
           {
             "code": 202,
             "icon": "error",
-            "caption": "Zuhause fehlt"
+            "caption": "Home ID not available or selected"
           },
           {
             "code": 203,
             "icon": "error",
-            "caption": "Kein Realtime-Zähler vorhanden"
+            "caption": "No Realtime-System available"
           },
           {
             "code": 210,
             "icon": "error",
-            "caption": "Token ungültig"
+            "caption": "Token invalid"
           }
     ]
 }

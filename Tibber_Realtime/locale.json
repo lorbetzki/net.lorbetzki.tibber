@@ -26,7 +26,14 @@
             "currentL2": "Stromstärke Phase 2",
             "currentL3": "Stromstärke Phase 3",
             "signalStrength": "Signalstärke Zähler",
-            "currency": "Währung"
+            "currency": "Währung",
+            "Retrieve Home ID":"Heim ID abrufen",
+            "Please insert Token":"Bitte Token einfügen",
+            "Home ID not available or selected":"Home ID nicht Verfügbar oder ausgewählt",
+            "Token invalid":"Token ungültig",
+            "User-Token":"Benutzer-Token",
+            "Select Home":"Heim auswählen",
+            "Realtime stream active":"Realtime Stream Aktiv"
         }
     }
 }
