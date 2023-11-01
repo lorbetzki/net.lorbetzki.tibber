@@ -1,53 +1,75 @@
-# IP-Symcon Modul: Tibber Query
+# Tibber
+Mit diesem Modul können die Informationen abgerufen werden welche von der Tibber Query API bereitgestellt werden.
+
+### Inhaltsverzeichnis
+
+1. [Funktionsumfang](#1-funktionsumfang)
+2. [Voraussetzungen](#2-voraussetzungen)
+3. [Software-Installation](#3-software-installation)
+4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
+5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
+6. [WebFront](#6-webfront)
+7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+
+### 1. Funktionsumfang
+
+* Auslesen aktueller Preis
+* Auslesen aktueller Preis Level (sehr günstig, günstig, normal, teuer, sehr teuer)
+* Preisvorschau als Chart
+* Variablen pro Stunden anlegen für den heutigen und morgigen Tag
+* Array zur Verwendung in eigene Anwendungen und Scripten.
  
-Es handelt sich hierbei um einen frühen Entwicklungsstand.
-Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr.
+### 2. Voraussetzungen
 
-## Dokumentation
+- Symcon ab Version 6.3
+- Tibber Account
+- Tibber Api Token -> [Tibber Developer](https://developer.tibber.com/) -> dort auf Sign-in, meldet euch mit eurem Tibber Account an und erstellt dort den Access-Token.
 
-**Inhaltsverzeichnis**
+### 3. Software-Installation
 
-1. [Funktionsumfang](#1-funktionsumfang) 
-2. [Systemanforderungen](#2-systemanforderungen)
-3. [Installation](#3-installation)
-4. [Einrichten der Instanz](#4-einrichten-der-instanz)
+* Über den Module Store das 'Tibber'-Modul installieren.
+* Alternativ über das Module Control folgende URL hinzufügen https://github.com/lorbetzki/net.lorbetzki.tibber.git
 
-## 1. Funktionsumfang
+### 4. Einrichten der Instanzen in IP-Symcon
 
-Mit diesem Modul können die Informationen abgerufen werden welche von der Tibber Query API bereitgestellt werden. Folgende Informationen sind im Modul implementiert:
+ Unter 'Instanz hinzufügen' kann die 'Tibber'-Instanz mithilfe des Schnellfilters gefunden werden.  
+	- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
 
-### 1.1 Day Ahead Preise
+__Konfigurationsseite__:
 
-Das Modul fragt die Day Ahead Preise für den aktuellen und (wenn schon publiziert) für den Folgetag ab und speichert dies rückwirkend (da Symcon keine zukünftigen Werte im Archiv erlaubt) in der "Day Ahead Preis Hilfsvariable" Variablen ab. Dabei wird der aktuelle Tag mit T -2 und der morgige Tag mit T -1 ins Archiv gespeichert.
+Name          				     | Beschreibung
+-------------------------------- | -------------------------------------------------------
+Benutzer Token | Access-Token aus der Tibber API eintragen
+Heim auswählen | Nachdem der Token eingetragen und die Änderung übernommen wurde, werden hier die im Account gespeicherten Heime aufgeführt. Wählt das, welches Ihr abfragen möchtet
+Preisdatenvariablen loggen | Diese Checkbox muss aktiviert werden, wenn die Day Ahead Preise im Archiv gespeichert sowie der Multi-Chart erzeugt werden sollen. [1] 
+Preisvariablen pro Stunde anlegen |Wird diese Checkbox aktivert, werden 48 Variablen ( 24 für den aktuellen Tag und 24 für den Folgetag) für jede Stunde angelegt, welche beim Abruf der Day Ahead Preise aktualisiert werden.
+Preis Array anlegen | Auswahl diverser Variablen
+aktiviere Instanz | aktivieren der Instanz
+
+[1] Es werden Day Ahead Preise für den aktuellen und (wenn schon publiziert) für den Folgetag abgerufen und gespeichert. Dies passiert rückwirkend, da Symcon keine zukünftigen Werte im Archiv erlaubt, in der "Day Ahead Preis Hilfsvariable" Variablen. Dabei wird der aktuelle Tag mit T -2 und der morgige Tag mit T -1 ins Archiv gespeichert.
 Zusätzlich wird automatisch ein Multi-Chart angelegt, welcher diese beiden Tage im stündlichen Vergleich über die beiden Tagen darstellt.
 
-Die Abfrage erfolgt bei jedem ändern der Instanz und wird dann per Timer je nach aktueller Zeit auf 0:00 Uhr oder wenn vor 13 Uhr am Tag auf 13 Uhr getzt. Da nicht jeden Tag um 13 Uhr die Werte des Folgetages schon veröffentlicht sind, prüft das Modul ob schon Werte für den Folgetag vorhanden sind. Ist das nicht der Fall wird ein neuer Abruf 5 Minuten später erneut eingeplant. Die wird wiederholt bis die Werte geliefert wurden.
 
-### 1.1.1 Aktueller Stundenpreis & Preislevel
-Zu beginn jeder Stunde wird sowohl der aktuelle Preis und der von Tibber bereitgestellte Preislevel in die Variablen "Aktueller Preis" und "Aktueller Preis Level"
+### 5. Statusvariablen und Profile
 
-## 2. Systemanforderungen
-- IP-Symcon ab Version 6.0
-- Tibber Account
-- Token aus dem eigenen Tibber-Account
+Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
 
-## 3. Installation
+#### Statusvariablen
 
-Das Modul ist Bestandteil der Tibber Library und wird somit bei der Installation im Module Store mit installiert.
+Name                          							| Typ     | Beschreibung
+----------------------------- 							| ------- | ------------
 
-## 4. Einrichten der Instanz
 
-Nach dem anlegen der Instanz muss die Instanz konfiguriert werden.
-Dazu muss der Token (aus dem Tibber Account) eingetragen und die Änderung der Instanz gespeichert werden.
+#### Profile
 
-Ist dies geschehen, wird automatisiert die Liste der im Tibber Account vorhanden Häuser abgerufen, welche im "Heim ID" Feld dann zur Auswahl bereit gestellt werden.
-Hier dann das gewünschte Haus auswählen.
+Name                    | Typ
+------------------------| -------
 
-### 4.1 Preisdaten Einstellungen
+### 6. WebFront
 
-#### 4.1.1 Preisdatenvariablen Loggen
-Diese Checkbox muss aktiviert werden, wenn die Day Ahead Preise im Archiv gespeichert sowie der Multi-Chart erzeugt werden sollen.
+Name                          							| Typ     | Beschreibung
+--------------------------------------------------------| ------- | ------------
 
-#### 4.1.2 Preisdatenvariablen pro Stunde anlegen
-Wird diese Checkbox aktivert, werden 48 Variablen ( 24 für den aktuellen Tag und 24 für den Folgetag) für jede Stunde angelegt, welche beim Abruf der Day Ahead Preise aktulaisert werden.
+### 7. PHP-Befehlsreferenz
+
 

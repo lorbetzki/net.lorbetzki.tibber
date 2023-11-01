@@ -1,8 +1,8 @@
 ### IP-Symcon Modul Library: Tibber
  
-Diese Modul wurde von Philipp Hirzel entwickelt aufgrund von Zeitmangel aber leider nicht veröffentlicht. Dankenswerterweise durfte ich das Modul übernehmen und der Symcon Community zur Verfügung stellen. Bei Fragen oder Wünnsche, gerne Meldung an mich.
+Diese Modul wurde von Philipp Hirzel entwickelt aufgrund von Zeitmangel aber leider nicht veröffentlicht. Dankenswerterweise durfte ich das Modul übernehmen und der Symcon Community zur Verfügung stellen. Bei Fragen oder Wünschem gerne Meldung an mich.
   
-Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr. 
+Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr. Es handelt sich hierbei um einen frühen Entwicklungsstand.
 
 ## Dokumentation
 
@@ -15,20 +15,21 @@ Die Nutzung des Moduls geschieht auf eigene Gefahr ohne Gewähr.
 
 ## 1. Funktionsumfang
 
-Es handelt sich hierbei um einen frühen Entwicklungsstand.
-
 Die Tibber Library stellt 2 Module zur verfügung mit denen die "Tibber Query API" und die "Tibber Realtime API" abgefragt werden können.
 
 Einen genauen Funktionsumfang des jeweiligen Moduls wird in der Modul Readme detailiert beschrieben
 
 ## 2. Systemanforderungen
-- IP-Symcon ab Version 6.0
+- Symcon ab Version 6.3
 - Tibber Account
+- Tibber Api Token -> [Tibber Developer](https://developer.tibber.com/) -> dort auf Sign-in, meldet euch mit eurem Tibber Account an und erstellt dort den Access-Token.
 - optional: Tibber Pulse für Realtime Daten
 
 ## 3. Installation
 
-Die Installation erfolgt über den Symcon Module Store. Einfach nach "Tibber" suchen.
+* Über den Module Store das 'Tibber'-Modul installieren.
+* Alternativ über das Module Control folgende URL hinzufügen https://github.com/lorbetzki/net.lorbetzki.tibber.git
+
 
 ## 4. Module
 
@@ -39,7 +40,7 @@ Genaue Infos sind in der Modul Readme vorhanden
 
 ### 4.2. Tibber Realtime
 
-Mit dem Tibber Realtime Modul kann der Realtime-Stream von Tibber abgefragt werde wenn ein Tibber Pulse Zähler im Tibber-Account verknüpft ist.
+Mit dem Tibber Realtime Modul kann optional der Realtime-Stream von Tibber abgefragt werde, sofern ein Tibber Pulse Zähler mit dem Tibber-Account verknüpft ist.
 Genaue Infos sind in der Modul Readme vorhanden
 
   
