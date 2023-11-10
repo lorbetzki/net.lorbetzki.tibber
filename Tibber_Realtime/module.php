@@ -83,7 +83,7 @@ declare(strict_types=1);
 			$this->CloseConnection();
 			
 		}
-		public function GetHomesData()
+		private function GetHomesData()
 		{
 			// Build Request Data
 			$request = '{ "query": "{viewer { homes { id appNickname} } }"}';
@@ -154,7 +154,7 @@ declare(strict_types=1);
 			}
    		}
 
-		public function ResetVariables()
+		private function ResetVariables()
 		{
 			$NewRows = static::$Variables;
 			$Variables = [];
@@ -468,4 +468,16 @@ declare(strict_types=1);
 				[ 25	,'signalStrength'					, 'signalStrength'					, VARIABLETYPE_INTEGER,	''						,  1	, false, true],		//Device signal strength (Pulse - dB; Watty - percent)				
 				[ 30	,'currency'							, 'currency'						, VARIABLETYPE_STRING, 	''						,  1	, false, true],		//Currency of displayed cost; requires active Tibber power dea				
 			];
+
+			public function RequestAction($Ident, $Value)
+			{
+				switch ($Ident) {
+					case "GetHomesData":
+						$this->GetHomesData();
+					break;
+					case "ResetVariables":
+						$this->ResetVariables();
+					break;
+				}
+			}
 	}

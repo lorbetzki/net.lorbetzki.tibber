@@ -8,8 +8,7 @@ Mit diesem Modul können die Informationen abgerufen werden welche von der Tibbe
 3. [Software-Installation](#3-software-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+6. [PHP-Befehlsreferenz](#6-php-befehlsreferenz)
 
 ### 1. Funktionsumfang
 
@@ -56,20 +55,97 @@ Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzeln
 
 #### Statusvariablen
 
-Name                          							| Typ     | Beschreibung
------------------------------ 							| ------- | ------------
-
+Name						 | Typ     | Beschreibung
+-----------------------------| ------- | ------------
+Aktueller Preis | FLOAT | Gibt den aktuellen Strompreis von Tibber wieder
+Aktueller Preis Level | INT | Preisniveau auf der Grundlage des nachlaufenden Preisdurchschnitts 
+Day Ahead Preis Hilfsvariable | FLOAT | Wird nur gebraucht um einen Chart über zukünftige Preise erstellen zu können
+Preis Array | STRING | Tibber Abfrage wird in ein Array geschrieben um eigene Anwendungen zu ermöglichen.
+Realtime Verfügbar | BOOL | Gibt an, ob ein Pulse oder anderer Smartmeter in Tibber erkannt wurde und Echtzeitabfragen des Verbauchs zu ermöglichen. Dazu das Modul Tibber_Realtime benutzen
+Day Ahead Chart | CHART | Multichart mit Anzeige vergangener und zukünftigen Preise
+Heute 0 bis 1 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 1 bis 2 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 2 bis 3 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 3 bis 4 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 4 bis 5 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 5 bis 6 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 6 bis 7 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 7 bis 8 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 8 bis 9 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 9 bis 10 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 10 bis 11 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 11 bis 12 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 12 bis 13 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 13 bis 14 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 14 bis 15 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 15 bis 16 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 16 bis 17 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 17 bis 18 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 18 bis 19 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 19 bis 20 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 20 bis 21 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 21 bis 22 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 22 bis 23 Uhr | FLOAT | Preisvariable pro Stunde 
+Heute 23 bis 24 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 0 bis 1 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 1 bis 2 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 2 bis 3 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 3 bis 4 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 4 bis 5 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 5 bis 6 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 6 bis 7 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 7 bis 8 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 8 bis 9 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 9 bis 10 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 10 bis 11 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 11 bis 12 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 12 bis 13 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 13 bis 14 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 14 bis 15 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 15 bis 16 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 16 bis 17 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 17 bis 18 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 18 bis 19 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 19 bis 20 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 20 bis 21 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 21 bis 22 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 22 bis 23 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 23 bis 24 Uhr | FLOAT | Preisvariable pro Stunde 
 
 #### Profile
 
 Name                    | Typ
 ------------------------| -------
+Tibber.price.cent | Integer | Eurocent zweistellig
+Tibber.price.level | Integer | ermittelter Preislevel von Tibber 1 = sehr günstig, 2 = günstig, 3 = normal, 4 = teuer, 5 = sehr teuer, 0 = -
 
-### 6. WebFront
+### .6 PHP-Befehlsreferenz
+`TIBBER_GetPriceData(integer $InstanzID);`
 
-Name                          							| Typ     | Beschreibung
---------------------------------------------------------| ------- | ------------
+Holt sich neue Preisdaten von Tibber ab und schreibt es in eine interne Variable. Bei aktiviertem "Preis - Array anlegen -> Zur Nutzung in Scripten und anderen Modulen" aktiviert ist, wird auch diese Variable geschrieben.
 
-### 7. PHP-Befehlsreferenz
+Beispiel:
+`TIBBER_GetPriceData(12345);`
+
+
+`TIBBER_SetActualPrice(integer $InstanzID);`
+
+Holt sich neue Preisdaten von Tibber ab und schreibt diese in alle aktivierten Variablen.
+
+Beispiel:
+`TIBBER_SetActualPrice(12345);`	
+
+
+`TIBBER_GetConsumptionHourly(integer $InstanzID);`, 
+`TIBBER_GetConsumptionDAILY(integer $InstanzID);`, 
+`TIBBER_GetConsumptionWEEKLY(integer $InstanzID);`, 
+`TIBBER_GetConsumptionMONTHLY(integer $InstanzID);`, 
+`TIBBER_GetConsumptionANNUAL(integer $InstanzID);`
+
+Holt sich Verbrauchsdaten für den jeweiligen Zeitraum ab.
+
+Beispiel:
+`TIBBER_GetConsumptionHourly(12345);`
+
 
 

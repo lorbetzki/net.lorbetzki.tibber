@@ -8,8 +8,6 @@ Mit diesem Modul können die Informationen abgerufen werden welche von der "Tibb
 3. [Software-Installation](#3-software-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
 
 ### 1. Funktionsumfang
 
@@ -77,18 +75,37 @@ Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzeln
 
 Name                          							| Typ     | Beschreibung
 ----------------------------- 							| ------- | ------------
-
+Aktuelle Leistung Bezug | Float | Aktuelle Leistung Bezug
+Aktuelle Leistung Einspeisung | Float | Aktuelle Leistung Einspeisung
+Zählerstand Bezug | Float | Zählerstand Bezug
+Zählerstand Einspeisung | Float | Zählerstand Einspeisung
+Verbrauch des aktuellen Tages | Float | Verbrauch des aktuellen Tages
+Produktion des aktuellen Tages | Float | Produktion des aktuellen Tages
+Verbrauch der aktuellen Stunde | Float | Verbrauch der aktuellen Stunde
+Produktion der aktuellen Stunde | Float | Produktion der aktuellen Stunde
+Kosten des aktuellen Tages | Float | Kosten des aktuellen Tages
+minimale Bezugs-Leistung des Tages | Float | minimale Bezugs-Leistung des Tages
+maximale Bezugs-Leistung des Tages | Float | maximale Bezugs-Leistung des Tages
+durchschnittliche Leistung des Tages | Float | durchschnittliche Leistung des Tages
+minimale Produktions-Leistung des Tages | Float | minimale Produktions-Leistung des Tages
+maximale Produktions-Leistung des Tages | Float | maximale Produktions-Leistung des Tages
+minimale Leistung des Tages | Float | minimale Leistung des Tages
+maximale Leistung des Tages | Float | maximale Leistung des Tages
+Blindleistung | Float | Blindleistung
+Produktions-Blindleistung | Float | Produktions-Blindleistung
+Spannung Phase 1 | Float | Spannung Phase 1
+Spannung Phase 2 | Float | Spannung Phase 2
+Spannung Phase 3 | Float | Spannung Phase 3
+Stromstärke Phase 1 | Float | Stromstärke Phase 1
+Stromstärke Phase 2 | Float | Stromstärke Phase 2
+Stromstärke Phase 3 | Float | Stromstärke Phase 3
+Signalstärke Zähler | Integer | Signalstärke Zähler
+Währung | String | Währung
 
 #### Profile
 
 Name                    | Typ
 ------------------------| -------
-
-### 6. WebFront
-
-Name                          							| Typ     | Beschreibung
---------------------------------------------------------| ------- | ------------
-
-### 7. PHP-Befehlsreferenz
-
+Tibber.price.cent | Integer | Eurocent zweistellig
+Tibber.price.euro | Integer | Euro zweistellig
 

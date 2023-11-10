@@ -25,7 +25,7 @@
                 {
                     "type": "Button",
                     "label": "Zuhause abrufen",
-                    "onClick": "TIBBERRT_GetHomesData($id);",
+                    "onClick": "IPS_RequestAction($id, 'GetHomesData', '');",
                     "enable": false,
                     "visible": false
                     }
@@ -116,12 +116,12 @@
         {
             "type": "Button",
             "label": "Reset Variablen",
-            "onClick": "TIBBERRT_ResetVariables($id);"
+            "onClick": "IPS_RequestAction($id, 'ResetVariables', '');"
           },
           {
             "type": "Button",
             "label": "Retrieve Home ID",
-            "onClick": "TIBBERRT_GetHomesData($id);"
+            "onClick": "IPS_RequestAction($id, 'GetHomesData', '');"
           }       
     ],
     "status": [

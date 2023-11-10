@@ -20,7 +20,7 @@
                 {
                     "type": "Button",
                     "label": "Zuhause abrufen",
-                    "onClick": "TIBBER_GetHomesData($id);",
+                    "onClick": "IPS_RequestAction($id, 'GetHomesData', '');",
                     "enabled": false,
                     "visible": false
                     }
@@ -76,7 +76,7 @@
           {
             "type": "Button",
             "label": "Retrieve Home ID",
-            "onClick": "TIBBER_GetHomesData($id);"
+            "onClick": "IPS_RequestAction($id, 'GetHomesData', '');"
           }
     ],
     "status": [

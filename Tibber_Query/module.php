@@ -65,7 +65,7 @@ declare(strict_types=1);
 				$this->SetStatus(104); // instanz deaktiveren
 			}
 		}
-		public function GetHomesData()
+		private function GetHomesData()
 		{
 			// Build Request Data
 			$request = '{ "query": "{viewer { homes { id appNickname} } }"}';
@@ -161,7 +161,7 @@ declare(strict_types=1);
 			}
 		}
 
-		public function CheckRealtimeEnabled()
+		private function CheckRealtimeEnabled()
 		{
 			// Build Request Data
 			$request = '{ "query": "{viewer { home(id: \"'. $this->ReadPropertyString('Home_ID') .'\") { features { realTimeConsumptionEnabled } }}}"}';
@@ -546,5 +546,18 @@ declare(strict_types=1);
 				IPS_SetVariableProfileAssociation('Tibber.price.level', 5, $this->Translate('very expensive'), '', 0xFF0000);
 			}
 			
+		}
+
+		public function RequestAction($Ident, $Value)
+		{
+			switch ($Ident) {
+				case "GetHomesData":
+					$this->GetHomesData();
+				break;
+				case "CheckRealtimeEnabled":
+					$this->CheckRealtimeEnabled();
+				break;
+				
+			}
 		}
 	}
