@@ -125,7 +125,6 @@ declare(strict_types=1);
 			switch ($payload['type']){
 
 				case 'connection_ack':			// Autorisierung erfolgrteich
-					// case 'connectioninit':
 					$this->SubscribeData();
 					break;
 				
@@ -141,8 +140,6 @@ declare(strict_types=1);
 		
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
    		{
-			$this->LogMessage("Message: ". $Message. " - ".$Data[0], KL_MESSAGE);
-
 			switch ($Message) {
 				case 10505: /* IM_CHANGESTATUS */
 					switch ($Data[0]) {
