@@ -19,6 +19,7 @@ declare(strict_types=1);
 			$this->RegisterAttributeString("Api_RT", "wss://websocket-api.tibber.com/v1-beta/gql/subscriptions");
 			$this->RegisterAttributeBoolean("RT_enabled", false);
 			$this->RegisterAttributeInteger("Parent_IO", 0);
+			$this->RegisterMessage(IPS_GetInstance($this->InstanceID)['ConnectionID'], IM_CHANGESTATUS);
 
 			$Variables = [];
         	foreach (static::$Variables as $Pos => $Variable) {
@@ -124,6 +125,7 @@ declare(strict_types=1);
 			switch ($payload['type']){
 
 				case 'connection_ack':			// Autorisierung erfolgrteich
+					// case 'connectioninit':
 					$this->SubscribeData();
 					break;
 				
@@ -131,12 +133,16 @@ declare(strict_types=1);
 					$this->ProcessReceivedPayload($payload);
 					break;
 
+				case 'errormessage':
+					$this->SendDebug('Receive Data', "Error received: ".$JSONString,0);
+					break;
 			}
 		}
 		
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
    		{
-        
+			$this->LogMessage("Message: ". $Message. " - ".$Data[0], KL_MESSAGE);
+
 			switch ($Message) {
 				case 10505: /* IM_CHANGESTATUS */
 					switch ($Data[0]) {
@@ -375,7 +381,7 @@ declare(strict_types=1);
 		private function ConfigParentIO()
 		{
 			$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-			$json = '{"Active":false,"Headers":"[{\"Name\":\"Sec-WebSocket-Protocol\",\"Value\":\"graphql-transport-ws\"},{\"Name\":\"user-agent\",\"Value\":\"Symcon_Tibber_Realtime\"}]","URL":"'.$this->ReadAttributeString('Api_RT').'","VerifyCertificate":true}';
+			$json = '{"Active":false,"Headers":"[{\"Name\":\"Sec-WebSocket-Protocol\",\"Value\":\"graphql-transport-ws\"},{\"Name\":\"user-agent\",\"Value\":\"symcon\/6.4 com.tibber\/1.8.3\"}]","URL":"'.$this->ReadAttributeString('Api_RT').'","VerifyCertificate":true}';
 
 			IPS_SetConfiguration($io_id, $json);
 			IPS_ApplyChanges($io_id);
@@ -427,6 +433,8 @@ declare(strict_types=1);
 		private function RegisterMessageParent()
 		{
 			$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
+			$this->SendDebug(__FUNCTION__, "IO ID: ".$io_id, 0);
+
 			$act_io_id = $this->ReadAttributeInteger('Parent_IO');
 			If ($io_id != $act_io_id){
 				if ($act_io_id != 0){
@@ -438,7 +446,7 @@ declare(strict_types=1);
 			return $io_id;
 		}
 
-		// Mapping Definition für die MQTT Werte - RSCP2MQTT
+		// Mapping Definition
 		private static $Variables = [
 			//  POS		IDENT								Tibber TAG							Variablen Typ			Var Profil	  			Faktor  ACTION  KEEP		Comment	
 				[ 1		,'power'							, 'power'							, VARIABLETYPE_FLOAT, 	'~Watt'					,  1	, false, true],		//Consumption at the moment (Watt)

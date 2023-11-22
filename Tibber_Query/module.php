@@ -187,7 +187,7 @@ declare(strict_types=1);
 				}
 			$jsonform["elements"][1]['items'][0]["options"] = $value;
 			$jsonform["elements"][1]['items'][0]["visible"] = true;
-			IPS_SetProperty($this->InstanceID, 'Home_ID', $value[0]["value"] );
+			//IPS_SetProperty($this->InstanceID, 'Home_ID', $value[0]["value"] );
 			return json_encode($jsonform);
 		}
 
