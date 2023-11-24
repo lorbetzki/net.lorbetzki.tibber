@@ -19,7 +19,6 @@ declare(strict_types=1);
 			$this->RegisterAttributeString("Api_RT", "wss://websocket-api.tibber.com/v1-beta/gql/subscriptions");
 			$this->RegisterAttributeBoolean("RT_enabled", false);
 			$this->RegisterAttributeInteger("Parent_IO", 0);
-			$this->RegisterMessage(IPS_GetInstance($this->InstanceID)['ConnectionID'], IM_CHANGESTATUS);
 
 			$Variables = [];
         	foreach (static::$Variables as $Pos => $Variable) {
@@ -38,6 +37,8 @@ declare(strict_types=1);
 			$this->RegisterPropertyString('Variables', json_encode($Variables));
 			$this->SendDebug('Variablen', json_encode($Variables),0);
 			
+			$this->RegisterMessage(IPS_GetInstance($this->InstanceID)['ConnectionID'], IM_CHANGESTATUS);
+
 			$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
 			$this->ConfigParentIO();
 		}
