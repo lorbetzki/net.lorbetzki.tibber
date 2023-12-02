@@ -421,7 +421,7 @@ declare(strict_types=1);
 					$time_new = time() + 300;								// Alle 5 Minuten abholen bis T1 Wert geliefert wird.
 				}
 				else{
-					$time_new = mktime(0, 0, 15, intval( date("m") ) , intval(date("d") + 1), intval(date("Y")));
+					$time_new = mktime(0, 0, 5, intval( date("m") ) , intval(date("d") + 1), intval(date("Y")));
 				}
 			}
 			$timer_new = $time_new - time();

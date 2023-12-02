@@ -19,7 +19,7 @@
                 },
                 {
                     "type": "Button",
-                    "label": "Zuhause abrufen",
+                    "label": "Select Home",
                     "onClick": "IPS_RequestAction($id, 'GetHomesData', '');",
                     "enabled": false,
                     "visible": false

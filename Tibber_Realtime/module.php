@@ -36,11 +36,10 @@ declare(strict_types=1);
         	}	
 			$this->RegisterPropertyString('Variables', json_encode($Variables));
 			$this->SendDebug('Variablen', json_encode($Variables),0);
-			
-			$this->RegisterMessage(IPS_GetInstance($this->InstanceID)['ConnectionID'], IM_CHANGESTATUS);
 
-			$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
-			$this->ConfigParentIO();
+			$this->RegisterMessage(0, IPS_KERNELMESSAGE);
+				$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
+				$this->ConfigParentIO();
 		}
 
 		public function Destroy()
@@ -52,38 +51,39 @@ declare(strict_types=1);
 		public function ApplyChanges()
 		{
 			//Never delete this line!
-			parent::ApplyChanges();
 			$this->RequireParent('{D68FD31F-0E90-7019-F16C-1949BD3079EF}');
 
-			if ($this->ReadPropertyString("Token") == ''){
-				$this->SetStatus(201); // no  token
-				$this->CloseIO();
-            	return false;
-			}
-			if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == ''){
-				$this->SetStatus(202); // no  Home selected
-				$this->GetHomesData();
-				$this->CloseIO();
-            	return false;
-			}
-			$this->CheckRealtimeEnabled();		//Prüfen ob RT enaböled ist für das Home
-			$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
-			$this->UpdateParentIOApiURL();		// Bei Bedarf API URL in IO Instanz updaten		
-			if (!$this->ReadAttributeBoolean("RT_enabled") ){
-				$this->SetStatus(203); // no RT Powermeter ->RT not enabled
-				$this->CloseIO();
-            	return false;
-			}
+//			if (IPS_GetKernelRunlevel() == KR_READY) 
+//			{
+				if ($this->ReadPropertyString("Token") == ''){
+					$this->SetStatus(201); // no  token
+					$this->CloseIO();
+					return false;
+				}
+				if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == ''){
+					$this->SetStatus(202); // no  Home selected
+					$this->GetHomesData();
+					$this->CloseIO();
+					return false;
+				}
+				$this->CheckRealtimeEnabled();		//Prüfen ob RT enaböled ist für das Home
+				$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
+				$this->UpdateParentIOApiURL();		// Bei Bedarf API URL in IO Instanz updaten		
+				if (!$this->ReadAttributeBoolean("RT_enabled") ){
+					$this->SetStatus(203); // no RT Powermeter ->RT not enabled
+					$this->CloseIO();
+					return false;
+				}
 
-			$this->SetStatus(102);
-			
-			$this->RegisterProfiles();
-			$this->RegisterVariables();
+				$this->SetStatus(102);
+				
+				$this->RegisterProfiles();
+				$this->RegisterVariables();
 
-			$this->RegisterMessageParent();
-			$this->OpenIO();
-			$this->CloseConnection();
-			
+				$this->RegisterMessageParent();
+				$this->OpenIO();
+				$this->CloseConnection();
+//			}
 		}
 		private function GetHomesData()
 		{
@@ -113,6 +113,7 @@ declare(strict_types=1);
 				}
 			$this->SendDebug('Homes-Values', json_encode($value),0)	;
 			$jsonform["elements"][2]['items'][0]["options"] = $value;
+			$jsonform["elements"][2]['items'][0]["visible"] = true;
 			$this->SendDebug('Homes-Values', json_encode($jsonform),0)	;
 			return json_encode($jsonform);
 		}
@@ -142,7 +143,7 @@ declare(strict_types=1);
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
    		{
 			switch ($Message) {
-				case 10505: /* IM_CHANGESTATUS */
+				case IM_CHANGESTATUS: /* IM_CHANGESTATUS 10505 */
 					switch ($Data[0]) {
 						case 102: // WebSocket ist aktiv
 							$this->SendDebug("Connection", "Tibber WSS Connection open", 0);
@@ -348,22 +349,28 @@ declare(strict_types=1);
 			}
 		}
 		private function OpenIO(){
-			if ($this->ReadPropertyBoolean('Active')){
-				$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-				If (!IPS_GetProperty($io_id, 'Active')){
-					IPS_SetProperty($io_id, 'Active', true);
-					IPS_ApplyChanges($io_id);
-				}
-				else{
-					$this->SubscribeData();
+			if (IPS_GetKernelRunlevel() == KR_READY) 
+			{
+				if ($this->ReadPropertyBoolean('Active')){
+					$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
+					If (!IPS_GetProperty($io_id, 'Active')){
+						IPS_SetProperty($io_id, 'Active', true);
+						IPS_ApplyChanges($io_id);
+					}
+					else{
+						$this->SubscribeData();
+					}
 				}
 			}
 		}
 
 		private function CloseIO(){
+			if (IPS_GetKernelRunlevel() == KR_READY) 
+			{
 				$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
 				IPS_SetProperty($io_id, 'Active', false);
 				IPS_ApplyChanges($io_id);
+			}
 		}
 		
 		private function StartAuthorization()
@@ -377,29 +384,33 @@ declare(strict_types=1);
 		}
 
 		private function ConfigParentIO()
-		{
-			$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-			$json = '{"Active":false,"Headers":"[{\"Name\":\"Sec-WebSocket-Protocol\",\"Value\":\"graphql-transport-ws\"},{\"Name\":\"user-agent\",\"Value\":\"symcon\/6.4 com.tibber\/1.8.3\"}]","URL":"'.$this->ReadAttributeString('Api_RT').'","VerifyCertificate":true}';
-
-			IPS_SetConfiguration($io_id, $json);
-			IPS_ApplyChanges($io_id);
-			IPS_SetName($io_id, 'Tibber Realtime Webclient');
+		{			
+			if (IPS_GetKernelRunlevel() == KR_READY) 
+			{
+				$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
+				$json = '{"Active":false,"Headers":"[{\"Name\":\"Sec-WebSocket-Protocol\",\"Value\":\"graphql-transport-ws\"},{\"Name\":\"user-agent\",\"Value\":\"symcon\/6.4 com.tibber\/1.8.3\"}]","URL":"'.$this->ReadAttributeString('Api_RT').'","VerifyCertificate":true}';
+				IPS_SetConfiguration($io_id, $json);
+				IPS_ApplyChanges($io_id);
+				IPS_SetName($io_id, 'Tibber Realtime Webclient');
+			}
 		}
 
 		private function UpdateParentIOApiURL()
-		{
-			$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-			$json = IPS_GetConfiguration($io_id);
-			$ar = json_decode($json, true);
-			if ($ar['URL'] != $this->ReadAttributeString('Api_RT')){		//Wenn neue URL dann IO Instanz updaten
-				$this->SendDebug('Realtime API URL', 'Die URL hat sich geändert und wird aktualisiert', 0);
-				$ar['URL'] = $this->ReadAttributeString('Api_RT');
-				$json = json_encode($ar);
-
-				IPS_SetConfiguration($io_id, $json);
-				IPS_ApplyChanges($io_id);
+		{			
+			if (IPS_GetKernelRunlevel() == KR_READY) 
+			{
+				$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
+				$json = IPS_GetConfiguration($io_id);
+				$ar = json_decode($json, true);
+				if ($ar['URL'] != $this->ReadAttributeString('Api_RT')){		//Wenn neue URL dann IO Instanz updaten
+					$this->SendDebug('Realtime API URL', 'Die URL hat sich geändert und wird aktualisiert', 0);
+					$ar['URL'] = $this->ReadAttributeString('Api_RT');
+					$json = json_encode($ar);
+					IPS_SetConfiguration($io_id, $json);
+					IPS_ApplyChanges($io_id);
+					}
+				}
 			}
-		}
 
 		private function SubscribeData(){
 			$tags =' ';
@@ -418,15 +429,18 @@ declare(strict_types=1);
 
 		private function CloseConnection()
 		{
-			if (!$this->ReadPropertyBoolean('Active')){
+			if (IPS_GetKernelRunlevel() == KR_READY) 
+			{
+				if (!$this->ReadPropertyBoolean('Active')){
 
-				$json = '{"id":"1","type":"complete"}';
-				$this->SendTibberRT($json);
-				$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-				IPS_SetProperty($io_id, 'Active', false);
-				IPS_ApplyChanges($io_id);
+					$json = '{"id":"1","type":"complete"}';
+					$this->SendTibberRT($json);
+					$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
+					IPS_SetProperty($io_id, 'Active', false);
+					IPS_ApplyChanges($io_id);
+					}
+				}
 			}
-		}
 
 		private function RegisterMessageParent()
 		{
