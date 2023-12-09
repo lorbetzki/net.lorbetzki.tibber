@@ -8,7 +8,7 @@
         },
 
         {
-            "type": "PasswordTextBox",
+            "type": "ValidationTextBox",
             "name": "Token",
             "caption": "User-Token"
 

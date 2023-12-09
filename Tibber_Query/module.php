@@ -1,8 +1,11 @@
 <?php
 
 declare(strict_types=1);
+require_once __DIR__ . '/../libs/functions.php';
+
 	class Tibber extends IPSModule
 	{
+		use TibberHelper;
 		public function Create()
 		{
 			//Never delete this line!
@@ -10,8 +13,8 @@ declare(strict_types=1);
 
 			$this->RegisterPropertyBoolean("InstanceActive", true);
 			$this->RegisterPropertyString("Token", '');
-			$this->RegisterPropertyString("Home_ID",'');
 			$this->RegisterPropertyString("Api", 'https://api.tibber.com/v1-beta/gql');
+			$this->RegisterPropertyString("Home_ID",'');
 			$this->RegisterPropertyBoolean("Price_log", false);
 			$this->RegisterPropertyBoolean("DayAhead_Chart", false);
 			$this->RegisterPropertyBoolean("Consumption_log", false);
@@ -22,7 +25,7 @@ declare(strict_types=1);
 			$this->RegisterAttributeString("Price_Array", '');
 			$this->RegisterAttributeInteger("ar_handler", 0);
 			$this->RegisterAttributeBoolean("EEX_Received", false);
-			
+
 			//--- Register Timer
 			$this->RegisterTimer("UpdateTimerPrice", 0, 'TIBBER_GetPriceData($_IPS[\'TARGET\']);');
 			$this->RegisterTimer("UpdateTimerActPrice", 0, 'TIBBER_SetActualPrice($_IPS[\'TARGET\']);');
@@ -52,7 +55,7 @@ declare(strict_types=1);
 
 			$this->RegisterProfiles();
 			$this->RegisterVariables();
-			$this->CheckRealtimeEnabled();
+			$this->SetValue('RT_enabled',$this->CheckRealtimeAvailable());
 			$this->GetPriceData();
 			$this->SetActualPrice();
 
@@ -65,19 +68,8 @@ declare(strict_types=1);
 				$this->SetStatus(104); // instanz deaktiveren
 			}
 		}
-		private function GetHomesData()
-		{
-			// Build Request Data
-			$request = '{ "query": "{viewer { homes { id appNickname} } }"}';
-			$result = $this->CallTibber($request);
-			if (!$result) return;		//Bei Fehler abbrechen
 
-			$this->SendDebug("Homes_Result", $result, 0);
-			$this->WriteAttributeString('Homes', $result);
-			$this->GetConfigurationForm();
-			$this->ReloadForm();
-
-		}
+		
 		public function GetPriceData()
 		{
 			// Build Request Data
@@ -161,17 +153,6 @@ declare(strict_types=1);
 			}
 		}
 
-		private function CheckRealtimeEnabled()
-		{
-			// Build Request Data
-			$request = '{ "query": "{viewer { home(id: \"'. $this->ReadPropertyString('Home_ID') .'\") { features { realTimeConsumptionEnabled } }}}"}';
-			$result = $this->CallTibber($request);
-			if (!$result) return;		//Bei Fehler abbrechen
-			$result_ar = json_decode($result, true);
-			$this->SetValue('RT_enabled',$result_ar['data']['viewer']['home']['features']['realTimeConsumptionEnabled']);
-
-		}
-
 		public function GetConfigurationForm()
 		{
 			$jsonform = json_decode(file_get_contents(__DIR__."/form.json"), true);
@@ -187,7 +168,7 @@ declare(strict_types=1);
 				}
 			$jsonform["elements"][1]['items'][0]["options"] = $value;
 			$jsonform["elements"][1]['items'][0]["visible"] = true;
-			//IPS_SetProperty($this->InstanceID, 'Home_ID', $value[0]["value"] );
+
 			return json_encode($jsonform);
 		}
 
@@ -321,41 +302,6 @@ declare(strict_types=1);
 				AC_AddLoggedValues($this->ReadAttributeInteger("ar_handler"), $this->GetIDForIdent("Ahead_Price"), [[ 'TimeStamp' => mktime(00, 00, 01, intval( date("m") ) , intval(date("d")-1), intval(date("Y"))), 'Value' => 0 ]]);
 			}
 			AC_ReAggregateVariable($this->ReadAttributeInteger("ar_handler"), $this->GetIDForIdent("Ahead_Price"));
-		}
-
-
-		private function CallTibber(string $request)
-		{
-			$headers =  array('Authorization: Bearer '.$this->ReadPropertyString('Token'),  "Content-type: application/json");
-			$curl = curl_init();
-
-			curl_setopt($curl, CURLOPT_POST, 1);
-            curl_setopt($curl, CURLOPT_URL, $this->ReadPropertyString('Api'));
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS,  $request  );
-
-			$result = curl_exec($curl);   
-			$this->SendDebug('Call_tibber_result', $result,0);
-            curl_close($curl);
-
-			$ar = json_decode($result, true); 
-
-			if (array_key_exists('errors', $ar)){
-				switch ($ar['errors'][0]['message']){
-					case 'Context creation failed: invalid token':
-						$this->SetStatus(210);
-						return false;
-						break;
-
-					default:
-						return false;
-						break;
-				}
-			}
-			if (array_key_exists('data', $ar)){
-				return $result;
-			}
 		}
 
 		private function SetLogging()
@@ -555,7 +501,7 @@ declare(strict_types=1);
 					$this->GetHomesData();
 				break;
 				case "CheckRealtimeEnabled":
-					$this->CheckRealtimeEnabled();
+					$this->CheckRealtimeAvailable();
 				break;
 				
 			}
