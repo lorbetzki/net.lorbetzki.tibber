@@ -8,6 +8,7 @@ Mit diesem Modul können die Informationen abgerufen werden welche von der "Tibb
 3. [Software-Installation](#3-software-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
+6. [PHP-Befehlsreferenz](#6-php-befehlsreferenz)
 
 ### 1. Funktionsumfang
 
@@ -109,3 +110,16 @@ Name                    | Typ
 Tibber.price.cent | Integer | Eurocent zweistellig
 Tibber.price.euro | Integer | Euro zweistellig
 
+### .6 PHP-Befehlsreferenz
+`TIBBERRT_ReloginSequence(integer $InstanzID);`
+INTERNE FUNKTION: startet eine Neuanmeldungssequenz. Dafür wird die vorherige Verbindung geschlossen, zufällig zwischen 60-120 sek gewartet und neu angemeldet.
+
+Beispiel:
+`TIBBERRT_ReloginSequence(12345);`
+
+
+`TIBBERRT_StartWatchdog(integer $InstanzID);`
+INTERNE FUNKTION: sobald Daten empfangen werden, wird der Watschdog auf 30 sek. gesetzt, kommen innerhalb dieser Zeit keine Daten an, wird die Funktion TIBBERRT_ReloginSequence() ausgeführt.
+
+Beispiel:
+`TIBBERRT_StartWatchdog(12345);`

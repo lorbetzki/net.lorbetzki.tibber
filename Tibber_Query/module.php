@@ -19,8 +19,9 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->RegisterPropertyBoolean("DayAhead_Chart", false);
 			$this->RegisterPropertyBoolean("Consumption_log", false);
 			$this->RegisterPropertyBoolean("Price_Variables", false);
-			$this->RegisterPropertyBoolean("Price_Array", false);
-			
+			$this->RegisterPropertyBoolean("Price_ArrayBool", false);
+			$this->RegisterPropertyBoolean("Statistics", false);
+
 			$this->RegisterAttributeString("Homes", "");
 			$this->RegisterAttributeString("Price_Array", '');
 			$this->RegisterAttributeInteger("ar_handler", 0);
@@ -58,7 +59,8 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->SetValue('RT_enabled',$this->CheckRealtimeAvailable());
 			$this->GetPriceData();
 			$this->SetActualPrice();
-
+			//$this->Statistics();
+			
 			if ($this->ReadPropertyBoolean("InstanceActive"))
 			{
 				$this->SetStatus(102); // instanz aktiveren
@@ -169,6 +171,11 @@ require_once __DIR__ . '/../libs/functions.php';
 			$jsonform["elements"][1]['items'][0]["options"] = $value;
 			$jsonform["elements"][1]['items'][0]["visible"] = true;
 
+			// soll verhindern dass das Array wieder eingeschaltet wird, es soll die Funktion TIBBER_PriceArray() verwendet werden.
+			if ($this->ReadPropertyBoolean('Price_ArrayBool'))
+			{ 
+				$jsonform["elements"][3]['items'][2]["visible"] = true;
+			}
 			return json_encode($jsonform);
 		}
 
@@ -269,10 +276,14 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 			
        		$this->WriteAttributeString("Price_Array", json_encode($result_array));
-			if ($this->ReadPropertyBoolean('Price_Array'))
+            $this->Statistics();
+
+			// DEL fällt mit der nächsten Version raus, stattdessen soll die Funktion benutzt werden TIBBER_PriceArray(int $Instanz)
+			if ($this->ReadPropertyBoolean('Price_ArrayBool'))
 			{
 				$this->SetValue("Price_Array", json_encode($result_array));
-			}			
+			}	
+
 			if ($this->ReadPropertyBoolean('Price_log') == true){
 				$this->LogAheadPrices($result_array);
 			}
@@ -459,7 +470,8 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->RegisterVariableInteger("act_level", $this->Translate('actual price level'), 'Tibber.price.level', 0);
 			$this->RegisterVariableBoolean("RT_enabled", $this->Translate('realtime available'), '', 0);
 
-			if ($this->ReadPropertyBoolean('Price_Array')){
+			// DEL fällt mit der nächsten Version raus, stattdessen soll die Funktion benutzt werden TIBBER_PriceArray(int $Instanz)
+			if ($this->ReadPropertyBoolean('Price_ArrayBool')){
 				$this->RegisterVariableString("Price_Array", $this->Translate('Price Array'), "", 0 );
 			}
 			else
@@ -470,7 +482,39 @@ require_once __DIR__ . '/../libs/functions.php';
 			if ($this->ReadPropertyBoolean('Price_log') == true){
 				$this->RegisterVariableFloat("Ahead_Price", $this->Translate('day ahead price helper variable'), 'Tibber.price.cent', 0);
 				$this->SetLogging();
-			}	
+			}
+
+			// Statistic
+			if ($this->ReadPropertyBoolean('Statistics')){
+				$this->RegisterVariableFloat("minprice", $this->Translate('minimum Price'), 'Tibber.price.cent', 0 );
+				$this->RegisterVariableFloat("maxprice", $this->Translate('maximum Price'), 'Tibber.price.cent', 0 );
+				$this->RegisterVariableFloat("minmaxprice", $this->Translate('minimum/maximum Price range'), 'Tibber.price.cent', 0 );
+
+				$this->RegisterVariableInteger("lowtime", $this->Translate('lowest price at this point in time'), '', 0 );
+				$this->RegisterVariableInteger("hightime", $this->Translate('highest price at this point in time'), '', 0 );
+
+				$this->RegisterVariableInteger("no_level1", $this->Translate('quantity of very cheapest price'), '', 0 );
+				$this->RegisterVariableInteger("no_level2", $this->Translate('quantity of cheapest price'), '', 0 );
+				$this->RegisterVariableInteger("no_level3", $this->Translate('quantity of normal price'), '', 0 );
+				$this->RegisterVariableInteger("no_level4", $this->Translate('quantity of highest price'), '', 0 );
+				$this->RegisterVariableInteger("no_level5", $this->Translate('quantity of very highest price'), '', 0 );
+
+			}
+			else
+			{
+				$this->UnregisterVariable("minprice");
+				$this->UnregisterVariable("maxprice");
+				$this->UnregisterVariable("minmaxprice");
+				$this->UnregisterVariable("lowtime");
+				$this->UnregisterVariable("hightime");
+				$this->UnregisterVariable("no_level1");
+				$this->UnregisterVariable("no_level2");
+				$this->UnregisterVariable("no_level3");
+				$this->UnregisterVariable("no_level4");
+				$this->UnregisterVariable("no_level5");
+
+			}
+			
 		}
 
 		private function RegisterProfiles()
@@ -505,5 +549,71 @@ require_once __DIR__ . '/../libs/functions.php';
 				break;
 				
 			}
+		}
+
+		private function Statistics()
+		{
+			if ($this->ReadPropertyBoolean('Statistics'))
+			{
+				$Array=json_decode($this->PriceArray(), true);
+
+				// Initialisiere der Variablen
+				$minPrice = PHP_INT_MAX;
+				$minPriceIdent = '';
+				$maxPrice = PHP_INT_MIN;
+				$maxPriceIdent = '';
+				$levelCount = array('VERY_CHEAP'=>0,'CHEAP'=>0,'NORMAL'=>0,'EXPENSIVE'=>0,'VERY_EXPENSIVE'=>0);
+
+				//durchlaufe das Array, um den geringste und höchsten Preis inkl. Stunde (Ident) für morgen zu finden
+				for ($i = 24; $i <= 47; $i++)
+				{
+					$currentPrice = $Array[$i]['Price'];
+					//geringster Preis
+					if ($currentPrice < $minPrice)
+					{
+						$minPrice = $currentPrice;
+						$minPriceIdent = $Array[$i]['Ident'];
+					}
+					//höchster Preis
+					if ($currentPrice > $maxPrice)
+					{
+						$maxPrice = $currentPrice;
+						$maxPriceIdent = $Array[$i]['Ident'];
+					}
+				}
+				
+				if (isset($level))
+				{
+					for ($i = 24; $i <= 47; $i++)
+					{
+						$level = $Array[$i]['Level'];
+						$levelCount[$level]++;
+					}
+				}
+				//gib den geringsten und höchsten Preis aus
+				$this->SetValue('minprice', $minPrice);
+
+				$minTime=intval(substr($minPriceIdent, 9)); //Uhrzeit (Stunde), in welcher der niedrigste Preis gilt
+				$this->SetValue('lowtime', $minTime);
+				
+				$this->SetValue('maxprice', $maxPrice);
+				$maxTime=intval(substr($maxPriceIdent, 9)); //Uhrzeit (Stunde), in welcher der hächste Preis gilt
+				$this->SetValue('hightime', $maxTime);
+				$Spanne=$maxPrice-$minPrice;  //Preisspanne zwischen min und max
+				$this->SetValue('minmaxprice', $Spanne);
+				
+				//Zuordnung der Preislevel zu Variablen
+				//Anzahl der Preislevel am Folgetag
+				$this->SetValue('no_level1', $levelCount['VERY_CHEAP']);
+				$this->SetValue('no_level2', $levelCount['CHEAP']);
+				$this->SetValue('no_level3', $levelCount['NORMAL']);
+				$this->SetValue('no_level4', $levelCount['EXPENSIVE']);
+				$this->SetValue('no_level5', $levelCount['VERY_EXPENSIVE']);
+			}
+		}
+
+		public function PriceArray()
+		{
+			return $this->ReadAttributeString('Price_Array');
 		}
 	}

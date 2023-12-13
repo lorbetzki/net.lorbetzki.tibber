@@ -43,6 +43,10 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->RegisterMessage(0, IPS_KERNELMESSAGE);
 			$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
 			$this->ConfigParentIO();
+
+			$this->RegisterTimer("ReloginSequence", 0, 'TIBBERRT_ReloginSequence($_IPS[\'TARGET\']);');
+			$this->RegisterTimer("StartWatchdog", 0, 'TIBBERRT_StartWatchdog($_IPS[\'TARGET\']);');
+
 		}
 
 		public function Destroy()
@@ -121,11 +125,14 @@ require_once __DIR__ . '/../libs/functions.php';
 				
 				case 'next':					// Antwort Werte
 					$this->ProcessReceivedPayload($payload);
+					$this->SetTimerInterval('StartWatchdog', 30000);
+					$this->SendDebug(__FUNCTION__, 'reset Watchdog',0);
 					break;
 
 				case 'errormessage':
 					$this->SendDebug('Receive Data', "Error received: ".$JSONString,0);
 					break;
+				
 			}
 		}
 		
@@ -145,6 +152,10 @@ require_once __DIR__ . '/../libs/functions.php';
 							break;
 					}
 					break;
+				case KR_READY:
+					$this->SetTimerInterval('ReloginSequence', 0);
+					$this->SetTimerInterval('StartWatchdog', 0);
+				break;
 			}
    		}
 
@@ -195,6 +206,7 @@ require_once __DIR__ . '/../libs/functions.php';
 					}
 				}
 			}
+			$this->SendDebug(__FUNCTION__, "write Variables ". json_encode($Variables), 0);
 			$this->CalcMinMaxPower();
 		}
 
@@ -439,5 +451,31 @@ require_once __DIR__ . '/../libs/functions.php';
 						$this->ResetVariables();
 					break;
 				}
+			}
+
+			public function ReloginSequence()
+			{
+				if ($this->GetTimerInterval('ReloginSequence') > 0)
+				{
+					$this->OpenIO();
+					$this->SetTimerInterval('ReloginSequence', 0);
+					$this->SendDebug(__FUNCTION__, "relogin was occured", 0);
+					$this->LogMessage($this->Translate('relogin was occured'), KL_NOTIFY);
+				}
+				else
+				{	
+					$this->SetTimerInterval('StartWatchdog', 0);
+					$randomtime = rand(60,120); 
+					$this->SetTimerInterval('ReloginSequence', $randomtime * 1000);
+					$this->SendDebug(__FUNCTION__, "relogin sequence is initiated in " . $randomtime ." sec.", 0);
+					$this->LogMessage($this->Translate('relogin sequence is initiated in ') . $randomtime . $this->Translate('sec.'), KL_NOTIFY);
+					$this->CloseIO();
+				}
+			}
+
+			public function StartWatchdog()
+			{
+				$this->SendDebug(__FUNCTION__, "No data received, starting relogin sequence", 0);
+				$this->ReloginSequence();
 			}
 	}

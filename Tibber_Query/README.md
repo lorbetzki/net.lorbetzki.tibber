@@ -42,7 +42,9 @@ Benutzer Token | Access-Token aus der Tibber API eintragen
 Heim auswählen | Nachdem der Token eingetragen und die Änderung übernommen wurde, werden hier die im Account gespeicherten Heime aufgeführt. Wählt das, welches Ihr abfragen möchtet
 Preisdatenvariablen loggen | Diese Checkbox muss aktiviert werden, wenn die Day Ahead Preise im Archiv gespeichert sowie der Multi-Chart erzeugt werden sollen. [1] 
 Preisvariablen pro Stunde anlegen |Wird diese Checkbox aktivert, werden 48 Variablen ( 24 für den aktuellen Tag und 24 für den Folgetag) für jede Stunde angelegt, welche beim Abruf der Day Ahead Preise aktualisiert werden.
-Preis Array anlegen | Auswahl diverser Variablen
+Preis Array anlegen | Auswahl diverser Variablen WIRD ERSETZT DURCH DIE FUNKTION TIBBER_PriceArray();
+einige Statistiken | erstellt Variablen mit ein paar statistischen werten.
+
 aktiviere Instanz | aktivieren der Instanz
 
 [1] Es werden Day Ahead Preise für den aktuellen und (wenn schon publiziert) für den Folgetag abgerufen und gespeichert. Dies passiert rückwirkend, da Symcon keine zukünftigen Werte im Archiv erlaubt, in der "Day Ahead Preis Hilfsvariable" Variablen. Dabei wird der aktuelle Tag mit T -2 und der morgige Tag mit T -1 ins Archiv gespeichert.
@@ -60,7 +62,7 @@ Name						 | Typ     | Beschreibung
 Aktueller Preis | FLOAT | Gibt den aktuellen Strompreis von Tibber wieder
 Aktueller Preis Level | INT | Preisniveau auf der Grundlage des nachlaufenden Preisdurchschnitts 
 Day Ahead Preis Hilfsvariable | FLOAT | Wird nur gebraucht um einen Chart über zukünftige Preise erstellen zu können
-Preis Array | STRING | Tibber Abfrage wird in ein Array geschrieben um eigene Anwendungen zu ermöglichen.
+Preis Array | STRING | Tibber Abfrage wird in ein Array geschrieben um eigene Anwendungen zu ermöglichen. WIRD ERSETZT DURCH DIE FUNKTION TIBBER_PriceArray();
 Realtime Verfügbar | BOOL | Gibt an, ob ein Pulse oder anderer Smartmeter in Tibber erkannt wurde und Echtzeitabfragen des Verbauchs zu ermöglichen. Dazu das Modul Tibber_Realtime benutzen
 Day Ahead Chart | CHART | Multichart mit Anzeige vergangener und zukünftigen Preise
 Heute 0 bis 1 Uhr | FLOAT | Preisvariable pro Stunde 
@@ -111,6 +113,17 @@ Morgen 20 bis 21 Uhr | FLOAT | Preisvariable pro Stunde
 Morgen 21 bis 22 Uhr | FLOAT | Preisvariable pro Stunde 
 Morgen 22 bis 23 Uhr | FLOAT | Preisvariable pro Stunde 
 Morgen 23 bis 24 Uhr | FLOAT | Preisvariable pro Stunde 
+Morgen 23 bis 24 Uhr | FLOAT | Preisvariable pro Stunde 
+min/max Preisspanne | FLOAT | Preisspanne, also die differenz zwischen min und max Wert
+max. Preis | FLOAT | der höchste Tagespreis 
+min. Preis | FLOAT | der niedriegste Tagespreis
+niedrigster Preis am diesem Zeitpunkt | INT | der niedriegste war zu diesem Zeitpunkt
+höchster Preis am diesem Zeitpunkt | INT | der höchste Preis war zu diesem Zeitpunkt
+Anzahl sehr günstiger Preis | INT | Anzahl des Preises
+Anzahl günstiger Preis | INT | Anzahl des Preises
+Anzahl normaler Preis | INT | Anzahl des Preises
+Anzahl teurer Preis | INT | Anzahl des Preises
+Anzahl sehr teurer Preis | INT | Anzahl des Preises
 
 #### Profile
 
@@ -148,4 +161,8 @@ Beispiel:
 `TIBBER_GetConsumptionHourly(12345);`
 
 
+`TIBBERRT_PriceArray(integer $InstanzID);`
+kann für externe Scripte eingesetzt werden. Gibt das abgeholte Preis Array raus
 
+Beispiel:
+`TIBBERRT_PriceArray(12345);`

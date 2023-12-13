@@ -54,8 +54,13 @@
                         "visible": true
                     },
                     {   "type": "CheckBox",
-                        "name": "Price_Array",
-                        "caption": "Preis - Array anlegen -> Zur Nutzung in Scripten und anderen Modulen",
+                        "name": "Price_ArrayBool",
+                        "caption": "Price - Create array -> For use in scripts and other modules",
+                        "visible": false
+                    },
+                    {   "type": "CheckBox",
+                        "name": "Statistics",
+                        "caption": "some statistics, like min/max price, quantity of price level etc",
                         "visible": true
                     }
                 ]

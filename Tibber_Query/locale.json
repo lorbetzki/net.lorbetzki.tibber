@@ -27,7 +27,19 @@
             "Retrieve Home ID":"Heim ID abrufen",
             "Please insert Token":"Bitte Token einfügen",
             "Home ID not available or selected":"Home ID nicht Verfügbar oder ausgewählt",
-            "Token invalid":"Token ungültig"
+            "Token invalid":"Token ungültig",
+            "some statistics, like min/max price, quantity of price level etc":"einige Statistiken, wie min/max Preis, Menge des Preisniveaus usw",
+            "minimum/maximum Price range":" min/max Preisspanne",
+            "maximum Price":"max. Preis",
+            "minimum Price":"min. Preis",
+            "lowest price at this point in time": "niedrigster Preis am diesem Zeitpunkt",
+            "highest price at this point in time":"höchster Preis am diesem Zeitpunkt",
+            "quantity of very cheapest price":"Anzahl sehr günstiger Preis",
+            "quantity of cheapest price":"Anzahl günstiger Preis ",
+			"quantity of normal price":"Anzahl normaler Preis",
+			"quantity of highest price":"Anzahl teurer Preis",
+			"quantity of very highest price":"Anzahl sehr teurer Preis"
+
         }
     }
 }
