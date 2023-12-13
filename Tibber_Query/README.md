@@ -161,8 +161,8 @@ Beispiel:
 `TIBBER_GetConsumptionHourly(12345);`
 
 
-`TIBBERRT_PriceArray(integer $InstanzID);`
+`TIBBER_PriceArray(integer $InstanzID);`
 kann für externe Scripte eingesetzt werden. Gibt das abgeholte Preis Array raus
 
 Beispiel:
-`TIBBERRT_PriceArray(12345);`
+`TIBBER_PriceArray(12345);`
