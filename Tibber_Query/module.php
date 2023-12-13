@@ -59,7 +59,6 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->SetValue('RT_enabled',$this->CheckRealtimeAvailable());
 			$this->GetPriceData();
 			$this->SetActualPrice();
-			//$this->Statistics();
 			
 			if ($this->ReadPropertyBoolean("InstanceActive"))
 			{
@@ -82,6 +81,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->SendDebug("Price_Result", $result, 0);
 			$this->ProcessPriceData($result, );
 			$this->SetUpdateTimerPrices();
+			$this->Statistics(json_decode($this->PriceArray(), true));
 
 		}
 
@@ -276,7 +276,6 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 			
        		$this->WriteAttributeString("Price_Array", json_encode($result_array));
-            $this->Statistics();
 
 			// DEL fällt mit der nächsten Version raus, stattdessen soll die Funktion benutzt werden TIBBER_PriceArray(int $Instanz)
 			if ($this->ReadPropertyBoolean('Price_ArrayBool'))
@@ -393,6 +392,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->SendDebug('Price Timer - Rundate', date('c', $time_new),0);
 			$this->SendDebug('Price Timer - Run in sec', $timer_new ,0);
 		}
+
 		private function SetUpdateTimerActualPrice()
 		{
 			date_default_timezone_set('Europe/Berlin');
@@ -551,12 +551,10 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 		}
 
-		private function Statistics()
+		private function Statistics($Data)
 		{
 			if ($this->ReadPropertyBoolean('Statistics'))
 			{
-				$Array=json_decode($this->PriceArray(), true);
-
 				// Initialisiere der Variablen
 				$minPrice = PHP_INT_MAX;
 				$minPriceIdent = '';
@@ -567,29 +565,29 @@ require_once __DIR__ . '/../libs/functions.php';
 				//durchlaufe das Array, um den geringste und höchsten Preis inkl. Stunde (Ident) für morgen zu finden
 				for ($i = 24; $i <= 47; $i++)
 				{
-					$currentPrice = $Array[$i]['Price'];
+					$currentPrice = $Data[$i]['Price'];
 					//geringster Preis
 					if ($currentPrice < $minPrice)
 					{
 						$minPrice = $currentPrice;
-						$minPriceIdent = $Array[$i]['Ident'];
+						$minPriceIdent = $Data[$i]['Ident'];
 					}
 					//höchster Preis
 					if ($currentPrice > $maxPrice)
 					{
 						$maxPrice = $currentPrice;
-						$maxPriceIdent = $Array[$i]['Ident'];
+						$maxPriceIdent = $Data[$i]['Ident'];
 					}
 				}
-				
-				if (isset($level))
-				{
+
 					for ($i = 24; $i <= 47; $i++)
 					{
-						$level = $Array[$i]['Level'];
-						$levelCount[$level]++;
+						$level = $Data[$i]['Level'];
+						if (!empty($level))
+						{
+							$levelCount[$level]++;
+						}
 					}
-				}
 				//gib den geringsten und höchsten Preis aus
 				$this->SetValue('minprice', $minPrice);
 
