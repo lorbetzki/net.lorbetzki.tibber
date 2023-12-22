@@ -38,6 +38,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				];
         	}	
 			$this->RegisterPropertyString('Variables', json_encode($Variables));
+
 			$this->SendDebug('Variablen', json_encode($Variables),0);
 
 			$this->RegisterMessage(0, IPS_KERNELMESSAGE);
@@ -107,7 +108,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->SendDebug('Homes-Values', json_encode($value),0)	;
 			$jsonform["elements"][2]['items'][0]["options"] = $value;
 			$jsonform["elements"][2]['items'][0]["visible"] = true;
-			$this->SendDebug('Homes-Values', json_encode($jsonform),0)	;
+			$this->SendDebug('Homes-Values', json_encode($jsonform),0);
 			return json_encode($jsonform);
 		}
 
@@ -161,9 +162,8 @@ require_once __DIR__ . '/../libs/functions.php';
 
 		private function ResetVariables()
 		{
-			$NewRows = static::$Variables;
 			$Variables = [];
-			foreach ($NewRows as $Pos => $Variable) {
+        	foreach (static::$Variables as $Pos => $Variable) {
 				$Variables[] = [
 					'Pos'          	=> $Variable[0],
 					'Ident'        	=> str_replace(' ', '', $Variable[1]),
@@ -177,8 +177,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				];
 			}
 			$this->SendDebug("Variabel_Reset", json_encode($Variables) ,0 );
-			IPS_SetProperty($this->InstanceID, 'Variables', json_encode($Variables));
-			IPS_ApplyChanges($this->InstanceID);
+			$this->UpdateFormField('Variables', 'values', json_encode($Variables)); 
 			return;
 		}
 
@@ -249,20 +248,20 @@ require_once __DIR__ . '/../libs/functions.php';
 
 		private function RegisterVariables()
 		{
-
 			$NewRows = static::$Variables;
-			$this->SendDebug('Variablen_Reg1', $this->ReadPropertyString('Variables'), 0);
+			$this->SendDebug('Variablen_Reg', $this->ReadPropertyString('Variables'), 0);
 			$Variables = json_decode($this->ReadPropertyString('Variables'), true);
 			foreach ($Variables as $pos => $Variable) {
 				@$this->MaintainVariable($Variable['Ident'], $Variable['Name'], $Variable['VarType'], $Variable['Profile'], $Variable['Pos'], $Variable['Keep']);
 				
 				foreach ($NewRows as $Index => $Row) {
+
 					if ($Variable['Ident'] == str_replace(' ', '', $Row[1])) {
 						unset($NewRows[$Index]);
 					}
 				}
 			}
-
+			// check if new row exist and create list 
 			if (count($NewRows) != 0) {
 				foreach ($NewRows as $NewVariable) {
 					$Variables[] = [
@@ -277,7 +276,7 @@ require_once __DIR__ . '/../libs/functions.php';
 					'Keep'         	=> $NewVariable[7],
 					];
 				}
-				IPS_SetProperty($this->InstanceID, 'Variables', json_encode($Variables));
+			    IPS_SetProperty($this->InstanceID, 'Variables', json_encode($Variables));			
 				$this->SendDebug('Variablen Register', json_encode($Variables), 0);
 				IPS_ApplyChanges($this->InstanceID);
 				return;
