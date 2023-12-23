@@ -28,7 +28,7 @@
             "Please insert Token":"Bitte Token einfügen",
             "Home ID not available or selected":"Home ID nicht Verfügbar oder ausgewählt",
             "Token invalid":"Token ungültig",
-            "some statistics, like min/max price, quantity of price level etc":"einige Statistiken, wie min/max Preis, Menge des Preisniveaus usw",
+            "create statistics, like min/max price, quantity of price level etc and activate logging":"erstellt einige Statistiken, wie min/max Preis, Menge des Preisniveaus usw und archiviert die Daten",
             "minimum/maximum Price range":" min/max Preisspanne",
             "maximum Price":"max. Preis",
             "minimum Price":"min. Preis",

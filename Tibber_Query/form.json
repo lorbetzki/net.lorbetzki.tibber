@@ -60,7 +60,7 @@
                     },
                     {   "type": "CheckBox",
                         "name": "Statistics",
-                        "caption": "some statistics, like min/max price, quantity of price level etc",
+                        "caption": "create statistics, like min/max price, quantity of price level etc and activate logging",
                         "visible": true
                     }
                 ]

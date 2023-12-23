@@ -470,7 +470,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->RegisterVariableInteger("act_level", $this->Translate('actual price level'), 'Tibber.price.level', 0);
 			$this->RegisterVariableBoolean("RT_enabled", $this->Translate('realtime available'), '', 0);
 
-			// DEL fällt mit der nächsten Version raus, stattdessen soll die Funktion benutzt werden TIBBER_PriceArray(int $Instanz)
+			// DEL fällt mit einem der nächsten Versionen raus, stattdessen soll die Funktion benutzt werden TIBBER_PriceArray(int $Instanz)
 			if ($this->ReadPropertyBoolean('Price_ArrayBool')){
 				$this->RegisterVariableString("Price_Array", $this->Translate('Price Array'), "", 0 );
 			}
@@ -486,18 +486,41 @@ require_once __DIR__ . '/../libs/functions.php';
 
 			// Statistic
 			if ($this->ReadPropertyBoolean('Statistics')){
+
+				$archive_handler = '{43192F0B-135B-4CE7-A0A7-1475603F3060}';  //ARchive Handler ermitteln
+				$ar = IPS_GetInstanceListByModuleID($archive_handler);
+				$ar_id = intval($ar[0]);
+
 				$this->RegisterVariableFloat("minprice", $this->Translate('minimum Price'), 'Tibber.price.cent', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("minprice")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("minprice"), true );}
+
 				$this->RegisterVariableFloat("maxprice", $this->Translate('maximum Price'), 'Tibber.price.cent', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("maxprice")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("maxprice"), true );}
+
 				$this->RegisterVariableFloat("minmaxprice", $this->Translate('minimum/maximum Price range'), 'Tibber.price.cent', 0 );
-
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("minmaxprice")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("minmaxprice"), true );}
+				
 				$this->RegisterVariableInteger("lowtime", $this->Translate('lowest price at this point in time'), '', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("lowtime")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("lowtime"), true );}
+				
 				$this->RegisterVariableInteger("hightime", $this->Translate('highest price at this point in time'), '', 0 );
-
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("hightime")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("hightime"), true );}
+				
+				// counter
 				$this->RegisterVariableInteger("no_level1", $this->Translate('quantity of very cheapest price'), '', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("no_level1")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("no_level1"), true ); AC_SetAggregationType($ar_id, $this->GetIDForIdent("no_level1"), 1);}
+
 				$this->RegisterVariableInteger("no_level2", $this->Translate('quantity of cheapest price'), '', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("no_level2")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("no_level2"), true ); AC_SetAggregationType($ar_id, $this->GetIDForIdent("no_level2"), 1);}
+
 				$this->RegisterVariableInteger("no_level3", $this->Translate('quantity of normal price'), '', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("no_level3")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("no_level3"), true ); AC_SetAggregationType($ar_id, $this->GetIDForIdent("no_level3"), 1);}
+
 				$this->RegisterVariableInteger("no_level4", $this->Translate('quantity of highest price'), '', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("no_level4")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("no_level4"), true ); AC_SetAggregationType($ar_id, $this->GetIDForIdent("no_level4"), 1);}
+
 				$this->RegisterVariableInteger("no_level5", $this->Translate('quantity of very highest price'), '', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("no_level5")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("no_level5"), true ); AC_SetAggregationType($ar_id, $this->GetIDForIdent("no_level5"), 1);}
 
 			}
 			else
@@ -512,7 +535,6 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->UnregisterVariable("no_level3");
 				$this->UnregisterVariable("no_level4");
 				$this->UnregisterVariable("no_level5");
-
 			}
 			
 		}
