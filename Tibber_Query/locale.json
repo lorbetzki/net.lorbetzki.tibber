@@ -38,7 +38,8 @@
             "quantity of cheapest price":"Anzahl günstiger Preis ",
 			"quantity of normal price":"Anzahl normaler Preis",
 			"quantity of highest price":"Anzahl teurer Preis",
-			"quantity of very highest price":"Anzahl sehr teurer Preis"
+			"quantity of very highest price":"Anzahl sehr teurer Preis",
+            "no contract available, we receive no data from tibber":"kein Vertrag vorhanden, wir bekommen keine Preisdaten."
 
         }
     }

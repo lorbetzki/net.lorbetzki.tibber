@@ -96,6 +96,11 @@
             "caption": "Home ID not available or selected"
           },
           {
+            "code": 203,
+            "icon": "error",
+            "caption": "no contract available, we receive no data from tibber"
+          },
+          {
             "code": 210,
             "icon": "error",
             "caption": "Token invalid"

@@ -241,6 +241,12 @@ require_once __DIR__ . '/../libs/functions.php';
 			$result_array = [];
 			$prices = json_decode($result, true);
 
+			// check if currentSubscription is nul, in this case we dont have a contract and dont get price infos
+			if ($prices["data"]["viewer"]["home"]["currentSubscription"] == false)
+				{
+					$this->SetStatus(203);
+					return;
+				}
 			foreach ($prices["data"]["viewer"]["home"]["currentSubscription"]["priceInfo"]["today"] AS $key => $wa_price) {
 				
 				$var = 'PT60M_T0_'.$key;

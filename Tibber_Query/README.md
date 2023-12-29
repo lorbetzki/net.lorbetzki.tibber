@@ -21,7 +21,7 @@ Mit diesem Modul können die Informationen abgerufen werden welche von der Tibbe
 ### 2. Voraussetzungen
 
 - Symcon ab Version 6.3
-- Tibber Account
+- Tibber Account UND Vertrag. Ohne Vertrag bekommen wir keine Preisdaten!
 - Tibber Api Token -> [Tibber Developer](https://developer.tibber.com/) -> dort auf Sign-in, meldet euch mit eurem Tibber Account an und erstellt dort den Access-Token.
 
 ### 3. Software-Installation
