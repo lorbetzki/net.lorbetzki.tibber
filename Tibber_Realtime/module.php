@@ -269,6 +269,7 @@ require_once __DIR__ . '/../libs/functions.php';
 					}
 				}
 			}
+
 			// check if new row exist and create list 
 			if (count($NewRows) != 0) {
 				foreach ($NewRows as $NewVariable) {
@@ -284,6 +285,9 @@ require_once __DIR__ . '/../libs/functions.php';
 					'Keep'         	=> $NewVariable[7],
 					];
 				}
+				
+				//IPS_SetProperty need to be used cause we want to recreate the variable-list if a new row exists
+
 			    IPS_SetProperty($this->InstanceID, 'Variables', json_encode($Variables));			
 				$this->SendDebug('Variablen Register', json_encode($Variables), 0);
 				IPS_ApplyChanges($this->InstanceID);
@@ -307,6 +311,9 @@ require_once __DIR__ . '/../libs/functions.php';
 				IPS_SetVariableProfileText("Tibber.price.euro", "", " €");
 			}
 		}
+
+		//IPS_SetProperty need to be used cause we want to activate io instance
+
 		private function OpenIO(){
 			if (IPS_GetKernelRunlevel() == KR_READY) 
 			{
@@ -323,6 +330,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 		}
 
+		//IPS_SetProperty need to be used cause we want to deactivate io instance
 		private function CloseIO(){
 			if (IPS_GetKernelRunlevel() == KR_READY) 
 			{
@@ -386,6 +394,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->SendTibberRT($json);
 		}
 
+		//IPS_SetProperty need to be used cause we want to close io instance
 		private function CloseConnection()
 		{
 			if (IPS_GetKernelRunlevel() == KR_READY) 
