@@ -4,7 +4,8 @@
         {   "type": "CheckBox",
             "name": "Active",
             "caption": "Realtime stream active",
-            "enabled": true
+            "enabled": true,
+            "visible": false
         },
 
         {
