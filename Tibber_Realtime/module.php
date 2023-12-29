@@ -103,7 +103,15 @@ require_once __DIR__ . '/../libs/functions.php';
 				$homes = json_decode($result, true);
 				$value[] = ["caption"=> "", "value"=> "" ];
 				foreach ($homes["data"]["viewer"]["homes"] as $key => $home){
-					$value[] = ["caption"=> $home["appNickname"], "value"=> $home["id"] ];
+					if (empty($home["appNickname"]) )
+						{	
+							$caption = $home['address']['address1']; 
+						}
+						else
+						{
+							$caption = $home["appNickname"];
+						}
+					$value[] = ["caption"=> $caption, "value"=> $home["id"] ];
 				}
 			$this->SendDebug('Homes-Values', json_encode($value),0)	;
 			$jsonform["elements"][2]['items'][0]["options"] = $value;
