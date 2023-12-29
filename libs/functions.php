@@ -6,7 +6,7 @@ trait TibberHelper
     private function GetHomesData()
     {
         // Build Request Data
-        $request = '{ "query": "{viewer { homes { id appNickname} } }"}';
+        $request = '{ "query": "{viewer { homes { address { address1 } id appNickname} } }"}';
         $result = $this->CallTibber($request);
         if (!$result) return;		//Bei Fehler abbrechen
 
