@@ -5,7 +5,7 @@
             "name": "Active",
             "caption": "Realtime stream active",
             "enabled": true,
-            "visible": false
+            "visible": true
         },
 
         {

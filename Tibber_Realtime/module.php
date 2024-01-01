@@ -322,9 +322,12 @@ require_once __DIR__ . '/../libs/functions.php';
 					If (!IPS_GetProperty($io_id, 'Active')){
 						IPS_SetProperty($io_id, 'Active', true);
 						IPS_ApplyChanges($io_id);
+						$this->SendDebug(__FUNCTION__, "Activate instance", 0);
 					}
 					else{
 						$this->SubscribeData();
+						$this->SendDebug(__FUNCTION__, "Subscribing", 0);
+
 					}
 				}
 			}
@@ -346,6 +349,7 @@ require_once __DIR__ . '/../libs/functions.php';
 
 				$json = '{"type":"connection_init","payload":{"token": "'.$this->ReadPropertyString('Token').'"}}';
 				$this->SendTibberRT($json);
+				$this->SendDebug(__FUNCTION__, $json, 0);
 
 			}
 		}
