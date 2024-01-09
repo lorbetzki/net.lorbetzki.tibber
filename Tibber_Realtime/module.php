@@ -288,7 +288,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				
 				//IPS_SetProperty need to be used cause we want to recreate the variable-list if a new row exists
 
-			    IPS_SetProperty($this->InstanceID, 'Variables', json_encode($Variables));			
+			     IPS_SetProperty($this->InstanceID, 'Variables', json_encode($Variables));			
 				$this->SendDebug('Variablen Register', json_encode($Variables), 0);
 				IPS_ApplyChanges($this->InstanceID);
 				return;
@@ -459,6 +459,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				[ 24	,'currentL3'						, 'currentL3'						, VARIABLETYPE_FLOAT, 	'~Ampere'				,  1	, false, true],		//Current on L3
 				[ 25	,'signalStrength'					, 'signalStrength'					, VARIABLETYPE_INTEGER,	''						,  1	, false, true],		//Device signal strength (Pulse - dB; Watty - percent)				
 				[ 30	,'currency'							, 'currency'						, VARIABLETYPE_STRING, 	''						,  1	, false, true],		//Currency of displayed cost; requires active Tibber power dea				
+
 			];
 
 			public function RequestAction($Ident, $Value)

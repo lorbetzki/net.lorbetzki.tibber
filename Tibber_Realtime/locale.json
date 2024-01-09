@@ -33,7 +33,7 @@
             "Token invalid":"Token ungültig",
             "User-Token":"Benutzer-Token",
             "Select Home":"Heim auswählen",
-            "Realtime stream active":"Realtime Stream Aktiv",
+            "Activate realtime stream":"aktiviere Realtime Stream",
             "relogin was occured":"Neuanmeldung wurde durchgeführt",
             "relogin sequence is initiated in ":"Neuanmeldung wird eingeleitet und gestartet in ",
             "sec.":"sek."
