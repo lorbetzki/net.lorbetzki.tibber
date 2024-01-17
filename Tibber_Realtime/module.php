@@ -24,7 +24,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->RegisterAttributeInteger('Parent_IO', 0);
 			$this->RegisterAttributeInteger('WTCounter', 0);
 
-			// Initale Configuration
+			// Initale Configuration			
 			$Variables = [];
         	foreach (static::$Variables as $Pos => $Variable) {
 				$Variables[] = [
@@ -42,7 +42,8 @@ require_once __DIR__ . '/../libs/functions.php';
 				
 			$this->RegisterPropertyString('Variables', json_encode($Variables));
 			$this->SendDebug(__FUNCTION__,json_encode($Variables),0);
-						
+					
+			//$this->RegisterPropertyString('Variables', "");
 			$this->RegisterMessage(0, IPS_KERNELMESSAGE);
 			$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
 			$this->ConfigParentIO();
@@ -66,13 +67,11 @@ require_once __DIR__ . '/../libs/functions.php';
 
 				if ($this->ReadPropertyString("Token") == ''){
 					$this->SetStatus(201); // no  token
-					//$this->CloseIO();
 					return false;
 				}
 				if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == ''){
 					$this->SetStatus(202); // no  Home selected
 					$this->GetHomesData();
-					//$this->CloseIO();
 					return false;
 				}
 				$this->WriteAttributeBoolean('RT_enabled',$this->CheckRealtimeAvailable());
@@ -81,21 +80,21 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->UpdateParentIOApiURL();		// Bei Bedarf API URL in IO Instanz updaten		
 				if (!$this->ReadAttributeBoolean("RT_enabled") ){
 					$this->SetStatus(203); // no RT Powermeter ->RT not enabled
-					//$this->CloseIO();
 					return false;
 				}
 
 				$this->SetStatus(102);
-				
 				$this->RegisterProfiles();
 				$this->RegisterVariables();
 
 				$this->RegisterMessageParent();
 
-				//$this->OpenIO();
-			    
-				//$this->CloseConnection();
-		}
+				// activate IO instance if the User apply changes and the Checkbox "Realtime stream instance" is true.
+				if ($this->ReadPropertyBoolean('Active'))
+				{	
+					$this->OpenIO();	
+				}
+			}
 
 		public function GetConfigurationForm()
 		{
@@ -120,6 +119,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 			$this->SendDebug(__FUNCTION__.' Write Values for Home', json_encode($value),0)	;
 
+			// create Values for List dynamically
 			$ListValues = [];
 			foreach (static::$Variables as $Pos => $Variable) {
 				$Pos          	= $Variable[0];
@@ -158,6 +158,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				
 				case 'next':					// Antwort Werte
 					$this->ProcessReceivedPayload($payload);
+					// its a watchdog, if we receive data, we set it to 30 sec. if Watchdog run to 0 we start the relogin sequence
 					$this->SetTimerInterval('StartWatchdog', 30000);
 					$this->SendDebug(__FUNCTION__, 'reset Watchdog',0);
 					break;
@@ -176,15 +177,14 @@ require_once __DIR__ . '/../libs/functions.php';
 					switch ($Data[0]) {
 						case 102: // WebSocket ist aktiv
 							$this->SendDebug("Connection", "Tibber WSS Connection open", 0);
-							$this->SetStatus(102);
 							$this->StartAuthorization();
 							break;
 						case 104: // WebSocket ist inaktiv
 							$this->SendDebug("Connection", "Tibber WSS Connection closed", 0);
 							// stop timer if instance will be set inactive
 							$this->SetTimerInterval('ReloginSequence', 0);
-							$this->SetTimerInterval('StartWatchdog', 0);		
-							$this->SetStatus(104);
+							$this->SetTimerInterval('StartWatchdog', 0);
+							$this->CloseConnection();
 							break;
 					}
 					break;
@@ -195,6 +195,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
    		}
 
+		// allow user to set default values in the configurationform
 		private function ResetVariables()
 		{
 			$Variables = [];
@@ -307,7 +308,6 @@ require_once __DIR__ . '/../libs/functions.php';
 		}
 
 		//IPS_SetProperty need to be used cause we want to activate io instance
-
 		private function OpenIO(){
 			if (IPS_GetKernelRunlevel() == KR_READY) 
 			{
@@ -327,7 +327,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 		}
 
-		//IPS_SetProperty need to be used cause we want to deactivate io instance
+		//IPS_SetProperty need to be used cause we want to deactivate io instance, we need closing for watchdog
 		private function CloseIO(){
 			if (IPS_GetKernelRunlevel() == KR_READY) 
 			{
@@ -344,7 +344,6 @@ require_once __DIR__ . '/../libs/functions.php';
 				$json = '{"type":"connection_init","payload":{"token": "'.$this->ReadPropertyString('Token').'"}}';
 				$this->SendTibberRT($json);
 				$this->SendDebug(__FUNCTION__, $json, 0);
-
 			}
 		}
 
@@ -392,21 +391,12 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->SendTibberRT($json);
 		}
 
-		//IPS_SetProperty need to be used cause we want to close io instance
 		private function CloseConnection()
 		{
-			if (IPS_GetKernelRunlevel() == KR_READY) 
-			{
-				if (!$this->ReadPropertyBoolean('Active')){
-
-					$json = '{"id":"1","type":"complete"}';
-					$this->SendTibberRT($json);
-					$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-					IPS_SetProperty($io_id, 'Active', false);
-					IPS_ApplyChanges($io_id);
-					}
-				}
-			}
+			$json = '{"id":"1","type":"complete"}';
+			$this->SendTibberRT($json);
+			$this->SendDebug(__FUNCTION__, "send Close Connection resquest ".json_encode($json), 0);
+		}
 
 		private function RegisterMessageParent()
 		{
@@ -465,14 +455,10 @@ require_once __DIR__ . '/../libs/functions.php';
 					case "ResetVariables":
 						$this->ResetVariables();
 					break;
-					case "Migrate":
-						$this->MigrateFromListView();
-					break;
 				}
 			}
 
 			// need a counter to retry only 3 times and give up if we reached this.
-			
 			public function ReloginRetriesReached(bool $reset = false)
 			{    
 				$counter = $this->ReadAttributeInteger('WTCounter');
@@ -486,36 +472,46 @@ require_once __DIR__ . '/../libs/functions.php';
 				return false;
 			}
 
+			// Sequence to initiate relogin
 			public function ReloginSequence()
 			{
+				// if the Timer is greater than 0 the Reloingsequence started
 				if ($this->GetTimerInterval('ReloginSequence') > 0)
 				{
+					// lets open the IO
 					$this->OpenIO();
+					// stop the Reloginsequence
 					$this->SetTimerInterval('ReloginSequence', 0);
 					$this->SendDebug(__FUNCTION__, "relogin was occured", 0);
 					$this->LogMessage($this->Translate('relogin was occured'), KL_NOTIFY);
+					// reset counter to 0
 					$this->ReloginRetriesReached(true);
 				}
 				else
 				{	
+					// we dont receive data, now we stop tje Watchdog
 					$this->SetTimerInterval('StartWatchdog', 0);
+					// use a random time between 60-120 sek
 					$randomtime = rand(60,120); 
+					// set the timer to start ourselve again
 					$this->SetTimerInterval('ReloginSequence', $randomtime * 1000);
 					$this->SendDebug(__FUNCTION__, "relogin sequence is initiated in " . $randomtime ." sec.", 0);
 					$this->LogMessage($this->Translate('relogin sequence is initiated in ') . $randomtime . $this->Translate('sec.'), KL_NOTIFY);
+					// count relogins, after three times we received a true and can abort it
 					$counter = $this->ReloginRetriesReached();
 					$this->CloseIO();
-					// count relogins, after three times abort it
 					if ($counter)
 					{
 						$this->SendDebug(__FUNCTION__, "relogin aborted, max retries reached", 0);
 						$this->LogMessage($this->Translate('relogin aborted, max retries reached'), KL_NOTIFY);
+						// to abort we stop this ReloginSequence and the status to the instance
 						$this->SetTimerInterval('ReloginSequence', 0);
 						$this->SetStatus(203);							
 					}
 				}
 			}
 
+			// would be use in ReceiveData(), if the counter run to 0 we start the reloginsequence
 			public function StartWatchdog()
 			{
 				$this->SendDebug(__FUNCTION__, "No data received, starting relogin sequence", 0);

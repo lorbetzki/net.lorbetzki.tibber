@@ -21,7 +21,7 @@
                     "name": "Home_ID",
                     "caption": "Select Home",
                     "visible": false,
-                    "options": [ {"caption" : "", "value":""}]
+                    "options": []
                 },
                 {
                     "type": "Button",
@@ -107,7 +107,7 @@
                     }
                 }],
 
-                "values":[ {"Pos":"", "Ident":"", "Name":"", "Tag":"", "VarType":"", "Profile":"", "Factor":"", "Action":"", "Keep":""} ]
+                "values":[]
         }
         
         
@@ -123,12 +123,7 @@
             "type": "Button",
             "label": "Retrieve Home ID",
             "onClick": "IPS_RequestAction($id, 'GetHomesData', '');"
-          },
-          {
-            "type": "Button",
-            "label": "Migrate",
-            "onClick": "IPS_RequestAction($id, 'Migrate', '');"
-          }       
+          }      
     ],
     "status": [
           {
