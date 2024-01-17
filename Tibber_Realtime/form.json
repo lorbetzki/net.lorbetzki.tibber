@@ -105,9 +105,9 @@
                         "caption": "Active",
                         "type": "CheckBox"
                     }
-                }
-                
-                    ]
+                }],
+
+                "values":[ {"Pos":"", "Ident":"", "Name":"", "Tag":"", "VarType":"", "Profile":"", "Factor":"", "Action":"", "Keep":""} ]
         }
         
         
@@ -123,6 +123,11 @@
             "type": "Button",
             "label": "Retrieve Home ID",
             "onClick": "IPS_RequestAction($id, 'GetHomesData', '');"
+          },
+          {
+            "type": "Button",
+            "label": "Migrate",
+            "onClick": "IPS_RequestAction($id, 'Migrate', '');"
           }       
     ],
     "status": [
@@ -140,6 +145,11 @@
             "code": 203,
             "icon": "error",
             "caption": "No Realtime-System available"
+          },
+          {
+            "code": 204,
+            "icon": "error",
+            "caption": "did not receive data after three retries, check connection."
           },
           {
             "code": 210,

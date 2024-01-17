@@ -13,16 +13,18 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->RequireParent('{D68FD31F-0E90-7019-F16C-1949BD3079EF}');
 
 			$this->RegisterPropertyBoolean('Active', false);
-			$this->RegisterPropertyString("Token", '');
-			$this->RegisterPropertyString("Home_ID",'');
-			$this->RegisterPropertyString("Api_RT", 'wss://websocket-api.tibber.com/v1-beta/gql/subscriptions');
-			$this->RegisterPropertyString("Api", 'https://api.tibber.com/v1-beta/gql');
-		
-			$this->RegisterAttributeString("Homes", "");
-			$this->RegisterAttributeString("Api_RT", "wss://websocket-api.tibber.com/v1-beta/gql/subscriptions");
-			$this->RegisterAttributeBoolean("RT_enabled", false);
-			$this->RegisterAttributeInteger("Parent_IO", 0);
+			$this->RegisterPropertyString('Token', '');
+			$this->RegisterPropertyString('Home_ID','');
+			$this->RegisterPropertyString('Api_RT', 'wss://websocket-api.tibber.com/v1-beta/gql/subscriptions');
+			$this->RegisterPropertyString('Api', 'https://api.tibber.com/v1-beta/gql');
 
+			$this->RegisterAttributeString('Homes', '');
+			$this->RegisterAttributeString('Api_RT', 'wss://websocket-api.tibber.com/v1-beta/gql/subscriptions');
+			$this->RegisterAttributeBoolean('RT_enabled', false);
+			$this->RegisterAttributeInteger('Parent_IO', 0);
+			$this->RegisterAttributeInteger('WTCounter', 0);
+
+			// Initale Configuration
 			$Variables = [];
         	foreach (static::$Variables as $Pos => $Variable) {
 				$Variables[] = [
@@ -36,15 +38,16 @@ require_once __DIR__ . '/../libs/functions.php';
 					'Action'       	=> $Variable[6],
 					'Keep'         	=> $Variable[7],
 				];
-        	}	
+        		}	
+				
 			$this->RegisterPropertyString('Variables', json_encode($Variables));
-
-			$this->SendDebug('Variablen', json_encode($Variables),0);
-
+			$this->SendDebug(__FUNCTION__,json_encode($Variables),0);
+						
 			$this->RegisterMessage(0, IPS_KERNELMESSAGE);
 			$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
 			$this->ConfigParentIO();
 
+			//register watchdogtimer
 			$this->RegisterTimer("ReloginSequence", 0, 'TIBBERRT_ReloginSequence($_IPS[\'TARGET\']);');
 			$this->RegisterTimer("StartWatchdog", 0, 'TIBBERRT_StartWatchdog($_IPS[\'TARGET\']);');
 
@@ -63,13 +66,13 @@ require_once __DIR__ . '/../libs/functions.php';
 
 				if ($this->ReadPropertyString("Token") == ''){
 					$this->SetStatus(201); // no  token
-					$this->CloseIO();
+					//$this->CloseIO();
 					return false;
 				}
 				if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == ''){
 					$this->SetStatus(202); // no  Home selected
 					$this->GetHomesData();
-					$this->CloseIO();
+					//$this->CloseIO();
 					return false;
 				}
 				$this->WriteAttributeBoolean('RT_enabled',$this->CheckRealtimeAvailable());
@@ -78,7 +81,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->UpdateParentIOApiURL();		// Bei Bedarf API URL in IO Instanz updaten		
 				if (!$this->ReadAttributeBoolean("RT_enabled") ){
 					$this->SetStatus(203); // no RT Powermeter ->RT not enabled
-					$this->CloseIO();
+					//$this->CloseIO();
 					return false;
 				}
 
@@ -88,35 +91,56 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->RegisterVariables();
 
 				$this->RegisterMessageParent();
-				$this->OpenIO();
-				$this->CloseConnection();
+
+				//$this->OpenIO();
+			    
+				//$this->CloseConnection();
 		}
 
 		public function GetConfigurationForm()
 		{
 			$jsonform = json_decode(file_get_contents(__DIR__."/form.json"), true);
+			$this->SendDebug(__FUNCTION__,json_encode($jsonform),0);
 
-			$value =array();
-				$result=$this->ReadAttributeString("Homes");
-				$this->SendDebug('Homes-Values_Attribute', json_encode($result),0)	;
-				if ($result == '') return;
-				$homes = json_decode($result, true);
-				$value[] = ["caption"=> "", "value"=> "" ];
-				foreach ($homes["data"]["viewer"]["homes"] as $key => $home){
-					if (empty($home["appNickname"]) )
-						{	
-							$caption = $home['address']['address1']; 
-						}
-						else
-						{
-							$caption = $home["appNickname"];
-						}
-					$value[] = ["caption"=> $caption, "value"=> $home["id"] ];
-				}
-			$this->SendDebug('Homes-Values', json_encode($value),0)	;
-			$jsonform["elements"][2]['items'][0]["options"] = $value;
-			$jsonform["elements"][2]['items'][0]["visible"] = true;
-			$this->SendDebug('Homes-Values', json_encode($jsonform),0);
+			$value=[];
+			$result=$this->ReadAttributeString("Homes");
+			$this->SendDebug(__FUNCTION__.' Read Attribute', json_encode($result),0)	;
+			if ($result == '') return;
+			$homes = json_decode($result, true);
+			foreach ($homes["data"]["viewer"]["homes"] as $key => $home){
+				if (empty($home["appNickname"]) )
+					{	
+						$caption = $home['address']['address1']; 
+					}
+					else
+					{
+						$caption = $home["appNickname"];
+					}
+				$value[] = ["caption"=> $caption, "value"=> $home["id"] ];
+			}
+			$this->SendDebug(__FUNCTION__.' Write Values for Home', json_encode($value),0)	;
+
+			$ListValues = [];
+			foreach (static::$Variables as $Pos => $Variable) {
+				$Pos          	= $Variable[0];
+				$Ident        	= str_replace(' ', '', $Variable[1]);
+				$Name         	= $Variable[1];
+				$Tag		   	= $Variable[2];
+				$VarType      	= $Variable[3];
+				$Profile      	= $Variable[4];
+				$Factor       	= $Variable[5];
+				$Action       	= $Variable[6];
+				$Keep         	= $Variable[7];
+
+				$ListValues[] = ["Pos"=>"$Pos", "Ident"=>"$Ident", "Name"=>"$Name", "Tag"=>"$Tag", "VarType"=>"$VarType", "Profile"=>"$Profile", "Factor"=>"$Factor", "Action"=>"$Action", "Keep"=>"$Keep" ];
+
+			}	
+				$this->SendDebug(__FUNCTION__.' Write Values for List', json_encode($ListValues),0)	;
+
+				$jsonform["elements"][2]['items'][0]["options"] = $value;
+				$jsonform["elements"][2]['items'][0]["visible"] = true;
+				$jsonform["elements"][3]['values'] = $ListValues;
+
 			return json_encode($jsonform);
 		}
 
@@ -157,6 +181,9 @@ require_once __DIR__ . '/../libs/functions.php';
 							break;
 						case 104: // WebSocket ist inaktiv
 							$this->SendDebug("Connection", "Tibber WSS Connection closed", 0);
+							// stop timer if instance will be set inactive
+							$this->SetTimerInterval('ReloginSequence', 0);
+							$this->SetTimerInterval('StartWatchdog', 0);		
 							$this->SetStatus(104);
 							break;
 					}
@@ -256,44 +283,11 @@ require_once __DIR__ . '/../libs/functions.php';
 
 		private function RegisterVariables()
 		{
-			$NewRows = static::$Variables;
-			$this->SendDebug('Variablen_Reg', $this->ReadPropertyString('Variables'), 0);
+			$this->SendDebug(__FUNCTION__, $this->ReadPropertyString('Variables'), 0);
 			$Variables = json_decode($this->ReadPropertyString('Variables'), true);
 			foreach ($Variables as $pos => $Variable) {
 				@$this->MaintainVariable($Variable['Ident'], $Variable['Name'], $Variable['VarType'], $Variable['Profile'], $Variable['Pos'], $Variable['Keep']);
-				
-				foreach ($NewRows as $Index => $Row) {
-
-					if ($Variable['Ident'] == str_replace(' ', '', $Row[1])) {
-						unset($NewRows[$Index]);
-					}
-				}
-			}
-
-			// check if new row exist and create list 
-			if (count($NewRows) != 0) {
-				foreach ($NewRows as $NewVariable) {
-					$Variables[] = [
-					'Pos'          	=> $NewVariable[0],
-					'Ident'        	=> str_replace(' ', '', $NewVariable[1]),
-					'Name'         	=> $this->Translate($NewVariable[1]),
-					'Tag'		   	=> $NewVariable[2],
-					'VarType'      	=> $NewVariable[3],
-					'Profile'      	=> $NewVariable[4],
-					'Factor'       	=> $NewVariable[5],
-					'Action'       	=> $NewVariable[6],
-					'Keep'         	=> $NewVariable[7],
-					];
-				}
-				
-				//IPS_SetProperty need to be used cause we want to recreate the variable-list if a new row exists
-
-			     IPS_SetProperty($this->InstanceID, 'Variables', json_encode($Variables));			
-				$this->SendDebug('Variablen Register', json_encode($Variables), 0);
-				IPS_ApplyChanges($this->InstanceID);
-				return;
-        	}
-			
+			}			
 		}
 
 		private function RegisterProfiles()
@@ -471,7 +465,25 @@ require_once __DIR__ . '/../libs/functions.php';
 					case "ResetVariables":
 						$this->ResetVariables();
 					break;
+					case "Migrate":
+						$this->MigrateFromListView();
+					break;
 				}
+			}
+
+			// need a counter to retry only 3 times and give up if we reached this.
+			
+			public function ReloginRetriesReached(bool $reset = false)
+			{    
+				$counter = $this->ReadAttributeInteger('WTCounter');
+			   
+				if(($counter > 3) OR $reset == true){
+					$counter = $this->WriteAttributeInteger('WTCounter',1);
+					return true;
+				}
+
+				$this->WriteAttributeInteger('WTCounter',($counter + 1));
+				return false;
 			}
 
 			public function ReloginSequence()
@@ -482,6 +494,7 @@ require_once __DIR__ . '/../libs/functions.php';
 					$this->SetTimerInterval('ReloginSequence', 0);
 					$this->SendDebug(__FUNCTION__, "relogin was occured", 0);
 					$this->LogMessage($this->Translate('relogin was occured'), KL_NOTIFY);
+					$this->ReloginRetriesReached(true);
 				}
 				else
 				{	
@@ -490,7 +503,16 @@ require_once __DIR__ . '/../libs/functions.php';
 					$this->SetTimerInterval('ReloginSequence', $randomtime * 1000);
 					$this->SendDebug(__FUNCTION__, "relogin sequence is initiated in " . $randomtime ." sec.", 0);
 					$this->LogMessage($this->Translate('relogin sequence is initiated in ') . $randomtime . $this->Translate('sec.'), KL_NOTIFY);
+					$counter = $this->ReloginRetriesReached();
 					$this->CloseIO();
+					// count relogins, after three times abort it
+					if ($counter)
+					{
+						$this->SendDebug(__FUNCTION__, "relogin aborted, max retries reached", 0);
+						$this->LogMessage($this->Translate('relogin aborted, max retries reached'), KL_NOTIFY);
+						$this->SetTimerInterval('ReloginSequence', 0);
+						$this->SetStatus(203);							
+					}
 				}
 			}
 
@@ -499,4 +521,5 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->SendDebug(__FUNCTION__, "No data received, starting relogin sequence", 0);
 				$this->ReloginSequence();
 			}
-	}
+
+}
