@@ -92,7 +92,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				// activate IO instance if the User apply changes and the Checkbox "Realtime stream instance" is true.
 				if ($this->ReadPropertyBoolean('Active'))
 				{	
-					$this->OpenIO();	
+					$this->OpenIO();
 				}
 			}
 
@@ -157,10 +157,14 @@ require_once __DIR__ . '/../libs/functions.php';
 					break;
 				
 				case 'next':					// Antwort Werte
-					$this->ProcessReceivedPayload($payload);
-					// its a watchdog, if we receive data, we set it to 30 sec. if Watchdog run to 0 we start the relogin sequence
-					$this->SetTimerInterval('StartWatchdog', 30000);
-					$this->SendDebug(__FUNCTION__, 'reset Watchdog',0);
+					// check if data are ok, otherwise let´s start watchdog
+					if (is_array($payload))
+					{
+						$this->ProcessReceivedPayload($payload);
+						// its a watchdog, if we receive data, we set it to 30 sec. if Watchdog run to 0 we start the relogin sequence
+						$this->SetTimerInterval('StartWatchdog', 30000);
+						$this->SendDebug(__FUNCTION__, 'reset Watchdog',0);
+					}
 					break;
 
 				case 'errormessage':
@@ -177,7 +181,7 @@ require_once __DIR__ . '/../libs/functions.php';
 					switch ($Data[0]) {
 						case 102: // WebSocket ist aktiv
 							$this->SendDebug("Connection", "Tibber WSS Connection open", 0);
-							$this->StartAuthorization();
+//							$this->StartAuthorization();
 							break;
 						case 104: // WebSocket ist inaktiv
 							$this->SendDebug("Connection", "Tibber WSS Connection closed", 0);
