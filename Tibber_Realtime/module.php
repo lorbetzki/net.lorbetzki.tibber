@@ -42,11 +42,12 @@ require_once __DIR__ . '/../libs/functions.php';
 				
 			$this->RegisterPropertyString('Variables', json_encode($Variables));
 			$this->SendDebug(__FUNCTION__,json_encode($Variables),0);
-					
-			//$this->RegisterPropertyString('Variables', "");
+			
+			// create unique Tibber ID
+			$this->RegisterPropertyInteger('TibberID',rand(1000,9999));
+
 			$this->RegisterMessage(0, IPS_KERNELMESSAGE);
 			$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
-			$this->ConfigParentIO();
 
 			//register watchdogtimer
 			$this->RegisterTimer("ReloginSequence", 0, 'TIBBERRT_ReloginSequence($_IPS[\'TARGET\']);');
@@ -63,7 +64,7 @@ require_once __DIR__ . '/../libs/functions.php';
 		public function ApplyChanges()
 		{
 			//Never delete this line!
-			$this->RequireParent('{D68FD31F-0E90-7019-F16C-1949BD3079EF}');
+			parent::ApplyChanges();
 
 				if ($this->ReadPropertyString("Token") == ''){
 					$this->SetStatus(201); // no  token
@@ -77,7 +78,6 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->WriteAttributeBoolean('RT_enabled',$this->CheckRealtimeAvailable());
 
 				$this->GetRtApi();					//aktuelle Realtime API Adresse abrufen
-				$this->UpdateParentIOApiURL();		// Bei Bedarf API URL in IO Instanz updaten		
 				if (!$this->ReadAttributeBoolean("RT_enabled") ){
 					$this->SetStatus(203); // no RT Powermeter ->RT not enabled
 					return false;
@@ -86,13 +86,11 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->SetStatus(102);
 				$this->RegisterProfiles();
 				$this->RegisterVariables();
-
-				$this->RegisterMessageParent();
-
-				// activate IO instance if the User apply changes and the Checkbox "Realtime stream instance" is true.
-				if ($this->ReadPropertyBoolean('Active'))
-				{	
-					$this->OpenIO();
+  
+				if (IPS_GetKernelRunlevel() == KR_READY /* KR_READY */) 
+				{
+					$this->RegisterMessageParent();
+					$this->UpdateConfigurationForParent();
 				}
 			}
 
@@ -141,36 +139,40 @@ require_once __DIR__ . '/../libs/functions.php';
 				$jsonform["elements"][2]['items'][0]["visible"] = true;
 				$jsonform["elements"][3]['values'] = $ListValues;
 
+				if ($this->ReadPropertyString("Token") && $this->ReadPropertyString("Home_ID") )
+				{
+					$jsonform["elements"][0]['enabled'] = true;
+				}
+
 			return json_encode($jsonform);
 		}
 
 		public function ReceiveData($JSONString)
 		{
-			$this->SendDebug('Receive Data', $JSONString,0);
 			$ar =json_decode($JSONString, true);
 			$payload = json_decode($ar['Buffer'], true);
 
 			switch ($payload['type']){
 
-				case 'connection_ack':			// Autorisierung erfolgrteich
+				case 'connection_ack':			// Autorisierung erfolgreich
+					// if connectionstring is correct, start Subscribing
 					$this->SubscribeData();
+					$this->SendDebug(__FUNCTION__, "Subscribing", 0);
 					break;
 				
 				case 'next':					// Antwort Werte
-					// check if data are ok, otherwise let´s start watchdog
-					if (is_array($payload))
-					{
-						$this->ProcessReceivedPayload($payload);
-						// its a watchdog, if we receive data, we set it to 30 sec. if Watchdog run to 0 we start the relogin sequence
-						$this->SetTimerInterval('StartWatchdog', 30000);
-						$this->SendDebug(__FUNCTION__, 'reset Watchdog',0);
-					}
+					$this->ProcessReceivedPayload($payload);
+					$this->SendDebug(__FUNCTION__, 'Payload: '.json_encode($JSONString),0);
+
+					// its a watchdog, if we receive data, we set it to 30 sec. if Watchdog run to 0 we start the relogin sequence
+					$this->SetTimerInterval('StartWatchdog', 30000);
+					$this->SendDebug(__FUNCTION__, 'reset Watchdog',0);
+
 					break;
 
 				case 'errormessage':
-					$this->SendDebug('Receive Data', "Error received: ".$JSONString,0);
+					$this->SendDebug(__FUNCTION__, "Error received: ".$JSONString,0);
 					break;
-				
 			}
 		}
 		
@@ -180,24 +182,28 @@ require_once __DIR__ . '/../libs/functions.php';
 				case IM_CHANGESTATUS: /* IM_CHANGESTATUS 10505 */
 					switch ($Data[0]) {
 						case 102: // WebSocket ist aktiv
-							$this->SendDebug("Connection", "Tibber WSS Connection open", 0);
-//							$this->StartAuthorization();
-							break;
+							$this->SendDebug(__FUNCTION__, "Open Werbsocket Connection", 0);
+							$this->StartAuthorization();
+						break;
 						case 104: // WebSocket ist inaktiv
-							$this->SendDebug("Connection", "Tibber WSS Connection closed", 0);
+							$this->SendDebug(__FUNCTION__, "Close Werbsocket Connection", 0);
 							// stop timer if instance will be set inactive
 							$this->SetTimerInterval('ReloginSequence', 0);
 							$this->SetTimerInterval('StartWatchdog', 0);
+							// user can manually close IO without disable instance, but we need to send a closing request
 							$this->CloseConnection();
-							break;
+							$this->SetStatus(104);
+						break;
 					}
-					break;
+				break;
 				case KR_READY:
 					$this->SetTimerInterval('ReloginSequence', 0);
 					$this->SetTimerInterval('StartWatchdog', 0);
+					$this->RegisterMessageParent();
+					$this->UpdateConfigurationForParent();
 				break;
-			}
-   		}
+	   		}
+	}
 
 		// allow user to set default values in the configurationform
 		private function ResetVariables()
@@ -216,7 +222,7 @@ require_once __DIR__ . '/../libs/functions.php';
 					'Keep'         	=> $Variable[7],
 				];
 			}
-			$this->SendDebug("Variabel_Reset", json_encode($Variables) ,0 );
+			$this->SendDebug(__FUNCTION__, json_encode($Variables) ,0 );
 			$this->UpdateFormField('Variables', 'values', json_encode($Variables)); 
 			return;
 		}
@@ -226,11 +232,10 @@ require_once __DIR__ . '/../libs/functions.php';
 			// Build Request Data
 			$request = '{ "query": "{viewer { websocketSubscriptionUrl }}"}';
 			$result = $this->CallTibber($request);
-			$this->SendDebug('RT-API-URL', $result, 0);
+			$this->SendDebug(__FUNCTION__, $result, 0);
 			if (!$result) return;		//Bei Fehler abbrechen
 
 			$result_ar = json_decode($result, true);
-
 			$this->WriteAttributeString('Api_RT',$result_ar['data']['viewer']['websocketSubscriptionUrl']);
 
 		}
@@ -311,36 +316,6 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 		}
 
-		//IPS_SetProperty need to be used cause we want to activate io instance
-		private function OpenIO(){
-			if (IPS_GetKernelRunlevel() == KR_READY) 
-			{
-				if ($this->ReadPropertyBoolean('Active')){
-					$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-					If (!IPS_GetProperty($io_id, 'Active')){
-						IPS_SetProperty($io_id, 'Active', true);
-						IPS_ApplyChanges($io_id);
-						$this->SendDebug(__FUNCTION__, "Activate instance", 0);
-					}
-					else{
-						$this->SubscribeData();
-						$this->SendDebug(__FUNCTION__, "Subscribing", 0);
-
-					}
-				}
-			}
-		}
-
-		//IPS_SetProperty need to be used cause we want to deactivate io instance, we need closing for watchdog
-		private function CloseIO(){
-			if (IPS_GetKernelRunlevel() == KR_READY) 
-			{
-				$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-				IPS_SetProperty($io_id, 'Active', false);
-				IPS_ApplyChanges($io_id);
-			}
-		}
-		
 		private function StartAuthorization()
 		{
 			if ($this->ReadPropertyBoolean('Active')){
@@ -351,34 +326,27 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 		}
 
-		private function ConfigParentIO()
-		{			
-			if (IPS_GetKernelRunlevel() == KR_READY) 
-			{
-				$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-				$json = '{"Active":false,"Headers":"[{\"Name\":\"Sec-WebSocket-Protocol\",\"Value\":\"graphql-transport-ws\"},{\"Name\":\"user-agent\",\"Value\":\"symcon\/6.4 com.tibber\/1.8.3\"}]","URL":"'.$this->ReadAttributeString('Api_RT').'","VerifyCertificate":true}';
-				IPS_SetConfiguration($io_id, $json);
-				IPS_ApplyChanges($io_id);
-				IPS_SetName($io_id, 'Tibber Realtime Webclient');
-			}
+		public function GetConfigurationForParent()
+		{
+			$Config = [
+							"Active"       		 => $this->ReadPropertyBoolean("Active"),
+							"URL"       		 => $this->ReadPropertyString("Api_RT"),
+							"VerifyCertificate"  => true,
+							"Headers"		 	 => "[{\"Name\":\"Sec-WebSocket-Protocol\",\"Value\":\"graphql-transport-ws\"},{\"Name\":\"user-agent\",\"Value\":\"symcon\/6.4 com.tibber\/1.8.3\"}]"
+		 			];
+			$this->SendDebug(__FUNCTION__, 'Create the Configuration '.json_encode($Config), 0);
+			return json_encode($Config);
 		}
 
-		private function UpdateParentIOApiURL()
-		{			
-			if (IPS_GetKernelRunlevel() == KR_READY) 
-			{
-				$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-				$json = IPS_GetConfiguration($io_id);
-				$ar = json_decode($json, true);
-				if ($ar['URL'] != $this->ReadAttributeString('Api_RT')){		//Wenn neue URL dann IO Instanz updaten
-					$this->SendDebug('Realtime API URL', 'Die URL hat sich geändert und wird aktualisiert', 0);
-					$ar['URL'] = $this->ReadAttributeString('Api_RT');
-					$json = json_encode($ar);
-					IPS_SetConfiguration($io_id, $json);
-					IPS_ApplyChanges($io_id);
-					}
-				}
-			}
+		Private function UpdateConfigurationForParent()
+		{
+			$ParentId = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
+			$this->SendDebug(__FUNCTION__, "ParentID is: ".$ParentId, 0);
+			$Script = 'IPS_SetConfiguration(' . $ParentId . ', \'' . $this->GetConfigurationForParent() . '\');' . PHP_EOL;
+			$Script .= 'IPS_ApplyChanges(' . $ParentId . ');';
+			// triggering MessageSink  IM_CHANGESTATUS .
+			IPS_RunScriptText($Script);
+		}
 
 		private function SubscribeData(){
 			$tags =' ';
@@ -388,24 +356,24 @@ require_once __DIR__ . '/../libs/functions.php';
 					$tags .= $Variable['Tag'].' ';
 				}
 			}	
-			$this->SendDebug('Tags-String', $tags, 0);
+			$this->SendDebug(__FUNCTION__,"Tags: ". $tags, 0);
 				
-			$json = '{"id":"1","type":"subscribe","payload": {"variables":{},"extensions":{},"query": "subscription{ liveMeasurement(homeId: \"'.$this->ReadPropertyString('Home_ID').'\") {'.$tags.'} }"}}';
-			$this->SendDebug('Subscribe-String', $json, 0);
+			$json = '{"id":"'.$this->ReadPropertyInteger('TibberID').'","type":"subscribe","payload": {"variables":{},"extensions":{},"query": "subscription{ liveMeasurement(homeId: \"'.$this->ReadPropertyString('Home_ID').'\") {'.$tags.'} }"}}';
+			$this->SendDebug(__FUNCTION__,"JSON: ". $json, 0);
 			$this->SendTibberRT($json);
 		}
 
 		private function CloseConnection()
 		{
-			$json = '{"id":"1","type":"complete"}';
+			$json = '{"id":"'.$this->ReadPropertyInteger('TibberID').'","type":"complete"}';
 			$this->SendTibberRT($json);
-			$this->SendDebug(__FUNCTION__, "send Close Connection resquest ".json_encode($json), 0);
+			$this->SendDebug(__FUNCTION__, "send Close Connection request ".json_encode($json), 0);
 		}
 
 		private function RegisterMessageParent()
 		{
 			$io_id = @IPS_GetInstance($this->InstanceID)['ConnectionID'];
-			$this->SendDebug(__FUNCTION__, "IO ID: ".$io_id, 0);
+			$this->SendDebug(__FUNCTION__, "IO ID ".$io_id, 0);
 
 			$act_io_id = $this->ReadAttributeInteger('Parent_IO');
 			If ($io_id != $act_io_id){
@@ -483,13 +451,14 @@ require_once __DIR__ . '/../libs/functions.php';
 				if ($this->GetTimerInterval('ReloginSequence') > 0)
 				{
 					// lets open the IO
-					$this->OpenIO();
+					//$this->OpenIO();
 					// stop the Reloginsequence
 					$this->SetTimerInterval('ReloginSequence', 0);
 					$this->SendDebug(__FUNCTION__, "relogin was occured", 0);
 					$this->LogMessage($this->Translate('relogin was occured'), KL_NOTIFY);
 					// reset counter to 0
 					$this->ReloginRetriesReached(true);
+					$this->SetStatus(102);							
 				}
 				else
 				{	
@@ -503,14 +472,14 @@ require_once __DIR__ . '/../libs/functions.php';
 					$this->LogMessage($this->Translate('relogin sequence is initiated in ') . $randomtime . $this->Translate('sec.'), KL_NOTIFY);
 					// count relogins, after three times we received a true and can abort it
 					$counter = $this->ReloginRetriesReached();
-					$this->CloseIO();
+					//$this->CloseIO();
 					if ($counter)
 					{
 						$this->SendDebug(__FUNCTION__, "relogin aborted, max retries reached", 0);
 						$this->LogMessage($this->Translate('relogin aborted, max retries reached'), KL_NOTIFY);
 						// to abort we stop this ReloginSequence and the status to the instance
 						$this->SetTimerInterval('ReloginSequence', 0);
-						$this->SetStatus(203);							
+						$this->SetStatus(104);							
 					}
 				}
 			}

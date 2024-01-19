@@ -4,7 +4,7 @@
         {   "type": "CheckBox",
             "name": "Active",
             "caption": "Activate realtime stream",
-            "enabled": true
+            "enabled": false
         },
 
         {
@@ -126,6 +126,16 @@
           }      
     ],
     "status": [
+         {   
+            "code": 102, 
+            "icon": "active", 
+            "caption": "Connection success"
+         },
+         {  
+            "code": 104, 
+            "icon": "inactive", 
+            "caption": "Connection inactive" 
+         },
           {
             "code": 201,
             "icon": "error",
@@ -143,8 +153,8 @@
           },
           {
             "code": 204,
-            "icon": "error",
-            "caption": "did not receive data after three retries, check connection."
+            "icon": "inactive",
+            "caption": "did not receive data after three retries, connection closed!"
           },
           {
             "code": 210,

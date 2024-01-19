@@ -37,7 +37,9 @@
             "relogin was occured":"Neuanmeldung wurde durchgeführt",
             "relogin sequence is initiated in ":"Neuanmeldung wird eingeleitet und gestartet in ",
             "sec.":"sek.",
-            "did not receive data after three retries, check connection.": "empfange keine Daten nach 3 versuchen. prüfe Verbindung."
+            "did not receive data after three retries, connection closed!": "keine Daten nach 3 versuchen empfangen. Verbindung wurde geschlossen!",
+            "Connection success": "Verbindung erfolgreich",
+            "Connection inactive": "Verbindung inaktiv"
         }
     }
 }
