@@ -39,7 +39,9 @@
             "sec.":"sek.",
             "did not receive data after three retries, connection closed!": "keine Daten nach 3 versuchen empfangen. Verbindung wurde geschlossen!",
             "Connection success": "Verbindung erfolgreich",
-            "Connection inactive": "Verbindung inaktiv"
+            "Connection inactive": "Verbindung inaktiv",
+            "Too many requests. Your IP is now temporarily banned for calling API for a few minutes.":"Zu viele Anfragen. Die IP ist temporär für einige minuten geblockt."
+
         }
     }
 }

@@ -39,8 +39,8 @@
 			"quantity of normal price":"Anzahl normaler Preis",
 			"quantity of highest price":"Anzahl teurer Preis",
 			"quantity of very highest price":"Anzahl sehr teurer Preis",
-            "no contract available, we receive no data from tibber":"kein Vertrag vorhanden, wir bekommen keine Preisdaten."
-
+            "no contract available, we receive no data from tibber":"kein Vertrag vorhanden, wir bekommen keine Preisdaten.",
+            "Too many requests. Your IP is now temporarily banned for calling API for a few minutes.":"Zu viele Anfragen. Die IP ist temporär für einige minuten geblockt."
         }
     }
 }

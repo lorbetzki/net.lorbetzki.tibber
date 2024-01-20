@@ -87,10 +87,13 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->RegisterProfiles();
 				$this->RegisterVariables();
   
-				if (IPS_GetKernelRunlevel() == KR_READY /* KR_READY */) 
+				$this->RegisterMessageParent();
+				$this->UpdateConfigurationForParent();
+
+				// if status not 102, close the connection
+				if ( $this->GetStatus() > 200 )
 				{
-					$this->RegisterMessageParent();
-					$this->UpdateConfigurationForParent();
+					$this->CloseConnection();
 				}
 			}
 
@@ -151,6 +154,7 @@ require_once __DIR__ . '/../libs/functions.php';
 		{
 			$ar =json_decode($JSONString, true);
 			$payload = json_decode($ar['Buffer'], true);
+			$this->SendDebug(__FUNCTION__, 'Payload: '.json_encode($JSONString),0);
 
 			switch ($payload['type']){
 
@@ -170,20 +174,27 @@ require_once __DIR__ . '/../libs/functions.php';
 
 					break;
 
-				case 'errormessage':
+				case 'error':
 					$this->SendDebug(__FUNCTION__, "Error received: ".$JSONString,0);
+					break;
+				
+				case 'connection_init':
+					$this->SendDebug(__FUNCTION__, "Error 4408 received: ".$JSONString,0);
 					break;
 			}
 		}
 		
 		public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
    		{
+			$this->SendDebug(__FUNCTION__, $Message, 0);
+
 			switch ($Message) {
 				case IM_CHANGESTATUS: /* IM_CHANGESTATUS 10505 */
 					switch ($Data[0]) {
 						case 102: // WebSocket ist aktiv
 							$this->SendDebug(__FUNCTION__, "Open Werbsocket Connection", 0);
 							$this->StartAuthorization();
+							
 						break;
 						case 104: // WebSocket ist inaktiv
 							$this->SendDebug(__FUNCTION__, "Close Werbsocket Connection", 0);
@@ -197,13 +208,13 @@ require_once __DIR__ . '/../libs/functions.php';
 					}
 				break;
 				case KR_READY:
+					$this->SendDebug(__FUNCTION__, "Kernel Ready", 0);
 					$this->SetTimerInterval('ReloginSequence', 0);
 					$this->SetTimerInterval('StartWatchdog', 0);
-					$this->RegisterMessageParent();
-					$this->UpdateConfigurationForParent();
 				break;
 	   		}
-	}
+		}
+	
 
 		// allow user to set default values in the configurationform
 		private function ResetVariables()

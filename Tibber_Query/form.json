@@ -101,6 +101,11 @@
             "caption": "no contract available, we receive no data from tibber"
           },
           {
+            "code": 205,
+            "icon": "error",
+            "caption": "Too many requests. Your IP is now temporarily banned for calling API for a few minutes."
+          },
+          {
             "code": 210,
             "icon": "error",
             "caption": "Token invalid"

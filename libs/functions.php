@@ -30,6 +30,12 @@ trait TibberHelper
 
 			$result = curl_exec($curl);   
             $this->SendDebug('Call_tibber_result', $result,0);
+			
+			if (str_contains($result, "Too many requests"))
+			{
+				$this->SetStatus(205);
+				return false;
+			}
             curl_close($curl);
 
 			$ar = json_decode($result, true); 
