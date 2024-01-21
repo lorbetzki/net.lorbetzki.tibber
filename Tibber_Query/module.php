@@ -14,7 +14,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->RegisterPropertyBoolean("InstanceActive", true);
 			$this->RegisterPropertyString("Token", '');
 			$this->RegisterPropertyString("Api", 'https://api.tibber.com/v1-beta/gql');
-			$this->RegisterPropertyString("Home_ID",'');
+			$this->RegisterPropertyString("Home_ID",'0');
 			$this->RegisterPropertyBoolean("Price_log", false);
 			$this->RegisterPropertyBoolean("DayAhead_Chart", false);
 			$this->RegisterPropertyBoolean("Consumption_log", false);
@@ -48,7 +48,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->SetStatus(201); // Kein Token
             	return false;
 			}
-			if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == ''){
+			if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == '0'){
 				$this->SetStatus(202); // Kein Zuhause
 				$this->GetHomesData();
             	return false;
@@ -159,23 +159,23 @@ require_once __DIR__ . '/../libs/functions.php';
 		{
 			$jsonform = json_decode(file_get_contents(__DIR__."/form.json"), true);
 
-			$value =array();
-				$result=$this->ReadAttributeString("Homes");
-				$this->SendDebug("Form_homes", $result, 0);
-				if ($result == '') return;
-				$homes = json_decode($result, true);
-				$value[] = ["caption"=> "", "value"=> "" ];
-				foreach ($homes["data"]["viewer"]["homes"] as $key => $home){
-					if (empty($home["appNickname"]) )
-						{	
-							$caption = $home['address']['address1']; 
-						}
-						else
-						{
-							$caption = $home["appNickname"];
-						}
-					$value[] = ["caption"=> $caption, "value"=> $home["id"] ];
-				}
+			$result=$this->ReadAttributeString("Homes");
+			$this->SendDebug("Form_homes", $result, 0);
+			if ($result == '') return;
+			$homes = json_decode($result, true);
+			$value[] = ["caption"=> "Select Home", "value"=> "0" ];
+			//$value ="";
+			foreach ($homes["data"]["viewer"]["homes"] as $key => $home){
+				if (empty($home["appNickname"]) )
+					{	
+						$caption = $home['address']['address1']; 
+					}
+					else
+					{
+						$caption = $home["appNickname"];
+					}
+				$value[] = ["caption"=> $caption, "value"=> $home["id"] ];
+			}
 			$jsonform["elements"][1]['items'][0]["options"] = $value;
 			$jsonform["elements"][1]['items'][0]["visible"] = true;
 

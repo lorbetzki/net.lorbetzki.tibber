@@ -15,7 +15,7 @@
                     "name": "Home_ID",
                     "caption": "Select Home",
                     "visible": false,
-                    "options": [ {"caption" : "", "value":""}]
+                    "options": [ {"caption" : "Select Home", "value":"0"} ]
                 },
                 {
                     "type": "Button",

@@ -14,7 +14,7 @@ require_once __DIR__ . '/../libs/functions.php';
 
 			$this->RegisterPropertyBoolean('Active', false);
 			$this->RegisterPropertyString('Token', '');
-			$this->RegisterPropertyString('Home_ID','');
+			$this->RegisterPropertyString('Home_ID','0');
 			$this->RegisterPropertyString('Api_RT', 'wss://websocket-api.tibber.com/v1-beta/gql/subscriptions');
 			$this->RegisterPropertyString('Api', 'https://api.tibber.com/v1-beta/gql');
 
@@ -70,7 +70,7 @@ require_once __DIR__ . '/../libs/functions.php';
 					$this->SetStatus(201); // no  token
 					return false;
 				}
-				if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == ''){
+				if ($this->ReadPropertyString("Token") != '' && $this->ReadPropertyString("Home_ID") == '0'){
 					$this->SetStatus(202); // no  Home selected
 					$this->GetHomesData();
 					return false;
@@ -102,7 +102,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$jsonform = json_decode(file_get_contents(__DIR__."/form.json"), true);
 			$this->SendDebug(__FUNCTION__,json_encode($jsonform),0);
 
-			$value=[];
+			$value[] = ["caption"=> "Select Home", "value"=> "0" ];
 			$result=$this->ReadAttributeString("Homes");
 			$this->SendDebug(__FUNCTION__.' Read Attribute', json_encode($result),0)	;
 			if ($result == '') return;
