@@ -31,7 +31,9 @@ trait TibberHelper
 			$result = curl_exec($curl);   
             $this->SendDebug('Call_tibber_result', $result,0);
 			
-			if (str_contains($result, "Too many requests"))
+			// erst ab PHP 8 verfügbar
+			//if (str_contains($result, "Too many requests"))
+			if ($result == "Too many requests. Your IP is now temporarily banned for calling API for a few minutes.")
 			{
 				$this->SetStatus(205);
 				return false;
