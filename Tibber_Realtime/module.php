@@ -442,7 +442,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 
 			// need a counter to retry only 3 times and give up if we reached this.
-			public function ReloginRetriesReached(bool $reset = false)
+			private function ReloginRetriesReached(bool $reset = false)
 			{    
 				$counter = $this->ReadAttributeInteger('WTCounter');
 			   
@@ -469,7 +469,8 @@ require_once __DIR__ . '/../libs/functions.php';
 					$this->LogMessage($this->Translate('relogin was occured'), KL_NOTIFY);
 					// reset counter to 0
 					$this->ReloginRetriesReached(true);
-					$this->SetStatus(102);							
+					$this->SetStatus(102);	
+					$this->UpdateConfigurationForParent();						
 				}
 				else
 				{	
