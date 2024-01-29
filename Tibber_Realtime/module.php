@@ -165,12 +165,20 @@ require_once __DIR__ . '/../libs/functions.php';
 					break;
 				
 				case 'next':					// Antwort Werte
-					$this->ProcessReceivedPayload($payload);
-					$this->SendDebug(__FUNCTION__, 'Payload: '.json_encode($JSONString),0);
-
 					// its a watchdog, if we receive data, we set it to 30 sec. if Watchdog run to 0 we start the relogin sequence
 					$this->SetTimerInterval('StartWatchdog', 30000);
 					$this->SendDebug(__FUNCTION__, 'reset Watchdog',0);
+
+					// check if we receive a data array in payload, otherwise send message
+					if (is_array($payload['payload']['data']))
+					{
+						$this->ProcessReceivedPayload($payload);
+					}
+					else
+					{
+						$this->LogMessage("Tibber JSON Error :".json_last_error_msg(). " Payload: ". json_encode($payload['payload']['data']), KL_ERROR);
+					}
+					$this->SendDebug(__FUNCTION__, 'Payload: '.json_encode($JSONString),0);
 
 					break;
 
