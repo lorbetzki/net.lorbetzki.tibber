@@ -505,21 +505,38 @@ require_once __DIR__ . '/../libs/functions.php';
 				$ar = IPS_GetInstanceListByModuleID($archive_handler);
 				$ar_id = intval($ar[0]);
 
-				$this->RegisterVariableFloat("minprice", $this->Translate('minimum Price'), 'Tibber.price.cent', 0 );
+				//tomorrow
+				$this->RegisterVariableFloat("minprice", $this->Translate('minimum Price for tomorrow'), 'Tibber.price.cent', 0 );
 				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("minprice")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("minprice"), true );}
 
-				$this->RegisterVariableFloat("maxprice", $this->Translate('maximum Price'), 'Tibber.price.cent', 0 );
+				$this->RegisterVariableFloat("maxprice", $this->Translate('maximum Price for tomorrow'), 'Tibber.price.cent', 0 );
 				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("maxprice")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("maxprice"), true );}
 
-				$this->RegisterVariableFloat("minmaxprice", $this->Translate('minimum/maximum Price range'), 'Tibber.price.cent', 0 );
+				$this->RegisterVariableFloat("minmaxprice", $this->Translate('minimum/maximum Price range for tomorrow'), 'Tibber.price.cent', 0 );
 				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("minmaxprice")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("minmaxprice"), true );}
 				
-				$this->RegisterVariableInteger("lowtime", $this->Translate('lowest price at this point in time'), '', 0 );
+				$this->RegisterVariableInteger("lowtime", $this->Translate('lowest price at this point in time for tomorrow'), 'Tibber.price.hour', 0 );
 				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("lowtime")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("lowtime"), true );}
 				
-				$this->RegisterVariableInteger("hightime", $this->Translate('highest price at this point in time'), '', 0 );
+				$this->RegisterVariableInteger("hightime", $this->Translate('highest price at this point in time for tomorrow'), 'Tibber.price.hour', 0 );
 				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("hightime")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("hightime"), true );}
 				
+				// today
+				$this->RegisterVariableFloat("minprice_today", $this->Translate('minimum Price for today'), 'Tibber.price.cent', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("minprice_today")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("minprice_today"), true );}
+
+				$this->RegisterVariableFloat("maxprice_today", $this->Translate('maximum Price for today'), 'Tibber.price.cent', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("maxprice_today")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("maxprice_today"), true );}
+
+				$this->RegisterVariableFloat("minmaxprice_today", $this->Translate('minimum/maximum Price range for today'), 'Tibber.price.cent', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("minmaxprice_today")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("minmaxprice_today"), true );}
+				
+				$this->RegisterVariableInteger("lowtime_today", $this->Translate('lowest price at this point in time for today'), 'Tibber.price.hour', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("lowtime_today")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("lowtime_today"), true );}
+				
+				$this->RegisterVariableInteger("hightime_today", $this->Translate('highest price at this point in time for today'), 'Tibber.price.hour', 0 );
+				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("hightime_today")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("hightime_today"), true );}
+
 				// counter
 				$this->RegisterVariableInteger("no_level1", $this->Translate('quantity of very cheapest price'), '', 0 );
 				if (AC_GetLoggingStatus($ar_id, $this->GetIDForIdent("no_level1")) == false){AC_SetLoggingStatus($ar_id,$this->GetIDForIdent("no_level1"), true ); AC_SetAggregationType($ar_id, $this->GetIDForIdent("no_level1"), 1);}
@@ -544,6 +561,11 @@ require_once __DIR__ . '/../libs/functions.php';
 				$this->UnregisterVariable("minmaxprice");
 				$this->UnregisterVariable("lowtime");
 				$this->UnregisterVariable("hightime");
+				$this->UnregisterVariable("minprice_today");
+				$this->UnregisterVariable("maxprice_today");
+				$this->UnregisterVariable("minmaxprice_today");
+				$this->UnregisterVariable("lowtime_today");
+				$this->UnregisterVariable("hightime_today");
 				$this->UnregisterVariable("no_level1");
 				$this->UnregisterVariable("no_level2");
 				$this->UnregisterVariable("no_level3");
@@ -571,6 +593,13 @@ require_once __DIR__ . '/../libs/functions.php';
 				IPS_SetVariableProfileAssociation('Tibber.price.level', 4, $this->Translate('expensive'), '', 0xFF8000);
 				IPS_SetVariableProfileAssociation('Tibber.price.level', 5, $this->Translate('very expensive'), '', 0xFF0000);
 			}
+
+			if (!IPS_VariableProfileExists('Tibber.price.hour')) {
+				IPS_CreateVariableProfile('Tibber.price.hour', 1);
+				IPS_SetVariableProfileText("Tibber.price.hour", "", $this->Translate(' o clock'));
+				IPS_SetVariableProfileValues("Tibber.price.hour", 0, 23, 1);
+
+			}
 			
 		}
 
@@ -587,62 +616,110 @@ require_once __DIR__ . '/../libs/functions.php';
 			}
 		}
 
-		private function Statistics($Data)
+		private function Statistics(array $Data)
 		{
 			if ($this->ReadPropertyBoolean('Statistics'))
 			{
-				// Initialisiere der Variablen
-				$minPrice = PHP_INT_MAX;
-				$minPriceIdent = '';
-				$maxPrice = PHP_INT_MIN;
-				$maxPriceIdent = '';
-				$levelCount = array('VERY_CHEAP'=>0,'CHEAP'=>0,'NORMAL'=>0,'EXPENSIVE'=>0,'VERY_EXPENSIVE'=>0);
-
-				//durchlaufe das Array, um den geringste und höchsten Preis inkl. Stunde (Ident) für morgen zu finden
-				for ($i = 24; $i <= 47; $i++)
-				{
-					$currentPrice = $Data[$i]['Price'];
-					//geringster Preis
-					if ($currentPrice < $minPrice)
-					{
-						$minPrice = $currentPrice;
-						$minPriceIdent = $Data[$i]['Ident'];
-					}
-					//höchster Preis
-					if ($currentPrice > $maxPrice)
-					{
-						$maxPrice = $currentPrice;
-						$maxPriceIdent = $Data[$i]['Ident'];
-					}
+				$noon = false;
+				date_default_timezone_set('Europe/Berlin');
+				$h = date('G');
+				if ($h >13)
+				{ 
+					$noon = true;
 				}
+		
+				if ($noon)
+				{
+					// Initialisiere der Variablen
+					$minPrice = PHP_INT_MAX;
+					$minPriceIdent = '';
+					$maxPrice = PHP_INT_MIN;
+					$maxPriceIdent = '';
+					$levelCount = array('VERY_CHEAP'=>0,'CHEAP'=>0,'NORMAL'=>0,'EXPENSIVE'=>0,'VERY_EXPENSIVE'=>0);
 
+					//durchlaufe das Array, um den geringste und höchsten Preis inkl. Stunde (Ident) für morgen zu finden
 					for ($i = 24; $i <= 47; $i++)
 					{
-						$level = $Data[$i]['Level'];
-						if (!empty($level))
+						$currentPrice = $Data[$i]['Price'];
+						//geringster Preis
+						if ($currentPrice < $minPrice)
 						{
-							$levelCount[$level]++;
+							$minPrice = $currentPrice;
+							$minPriceIdent = $Data[$i]['Ident'];
+						}
+						//höchster Preis
+						if ($currentPrice > $maxPrice)
+						{
+							$maxPrice = $currentPrice;
+							$maxPriceIdent = $Data[$i]['Ident'];
 						}
 					}
-				//gib den geringsten und höchsten Preis aus
-				$this->SetValue('minprice', $minPrice);
 
-				$minTime=intval(substr($minPriceIdent, 9)); //Uhrzeit (Stunde), in welcher der niedrigste Preis gilt
-				$this->SetValue('lowtime', $minTime);
-				
-				$this->SetValue('maxprice', $maxPrice);
-				$maxTime=intval(substr($maxPriceIdent, 9)); //Uhrzeit (Stunde), in welcher der hächste Preis gilt
-				$this->SetValue('hightime', $maxTime);
-				$Spanne=$maxPrice-$minPrice;  //Preisspanne zwischen min und max
-				$this->SetValue('minmaxprice', $Spanne);
-				
-				//Zuordnung der Preislevel zu Variablen
-				//Anzahl der Preislevel am Folgetag
-				$this->SetValue('no_level1', $levelCount['VERY_CHEAP']);
-				$this->SetValue('no_level2', $levelCount['CHEAP']);
-				$this->SetValue('no_level3', $levelCount['NORMAL']);
-				$this->SetValue('no_level4', $levelCount['EXPENSIVE']);
-				$this->SetValue('no_level5', $levelCount['VERY_EXPENSIVE']);
+						for ($i = 24; $i <= 47; $i++)
+						{
+							$level = $Data[$i]['Level'];
+							if (!empty($level))
+							{
+								$levelCount[$level]++;
+							}
+						}
+					//gib den geringsten und höchsten Preis aus
+					$this->SetValue('minprice', $minPrice);
+
+					$minTime=intval(substr($minPriceIdent, 9)); //Uhrzeit (Stunde), in welcher der niedrigste Preis gilt
+					$this->SetValue('lowtime', $minTime);
+					
+					$this->SetValue('maxprice', $maxPrice);
+					$maxTime=intval(substr($maxPriceIdent, 9)); //Uhrzeit (Stunde), in welcher der hächste Preis gilt
+					$this->SetValue('hightime', $maxTime);
+					$Spanne=$maxPrice-$minPrice;  //Preisspanne zwischen min und max
+					$this->SetValue('minmaxprice', $Spanne);
+					
+					//Zuordnung der Preislevel zu Variablen
+					//Anzahl der Preislevel am Folgetag
+					$this->SetValue('no_level1', $levelCount['VERY_CHEAP']);
+					$this->SetValue('no_level2', $levelCount['CHEAP']);
+					$this->SetValue('no_level3', $levelCount['NORMAL']);
+					$this->SetValue('no_level4', $levelCount['EXPENSIVE']);
+					$this->SetValue('no_level5', $levelCount['VERY_EXPENSIVE']);
+				}
+				else
+				{
+					// Initialisiere der Variablen
+					$minPrice_today = PHP_INT_MAX;
+					$minPriceIdent_today = '';
+					$maxPrice_today = PHP_INT_MIN;
+					$maxPriceIdent_today = '';
+
+					//durchlaufe das Array, um den geringste und höchsten Preis inkl. Stunde (Ident) für morgen zu finden
+					for ($i = 0; $i <= 23; $i++)
+					{
+						$currentPrice_today = $Data[$i]['Price'];
+						//geringster Preis
+						if ($currentPrice_today < $minPrice_today)
+						{
+							$minPrice_today = $currentPrice_today;
+							$minPriceIdent_today = $Data[$i]['Ident'];
+						}
+						//höchster Preis
+						if ($currentPrice_today > $maxPrice_today)
+						{
+							$maxPrice_today = $currentPrice_today;
+							$maxPriceIdent_today = $Data[$i]['Ident'];
+						}
+						//gib den geringsten und höchsten Preis aus
+						$this->SetValue('minprice_today', $minPrice_today);
+
+						$minTime_today=intval(substr($minPriceIdent_today, 9)); //Uhrzeit (Stunde), in welcher der niedrigste Preis gilt
+						$this->SetValue('lowtime_today', $minTime_today);
+						
+						$this->SetValue('maxprice_today', $maxPrice_today);
+						$maxTime_today=intval(substr($maxPriceIdent_today, 9)); //Uhrzeit (Stunde), in welcher der hächste Preis gilt
+						$this->SetValue('hightime_today', $maxTime_today);
+						$Spanne_today=$maxPrice_today-$minPrice_today;  //Preisspanne zwischen min und max
+						$this->SetValue('minmaxprice_today', $Spanne_today);
+					}
+				}
 			}
 		}
 

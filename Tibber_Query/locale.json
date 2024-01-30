@@ -29,18 +29,24 @@
             "Home ID not available or selected":"Home ID nicht Verfügbar oder ausgewählt",
             "Token invalid":"Token ungültig",
             "create statistics, like min/max price, quantity of price level etc and activate logging":"erstellt einige Statistiken, wie min/max Preis, Menge des Preisniveaus usw und archiviert die Daten",
-            "minimum/maximum Price range":" min/max Preisspanne",
-            "maximum Price":"max. Preis",
-            "minimum Price":"min. Preis",
-            "lowest price at this point in time": "niedrigster Preis am diesem Zeitpunkt",
-            "highest price at this point in time":"höchster Preis am diesem Zeitpunkt",
+            "minimum/maximum Price range for tomorrow":" min/max Preisspanne für morgen",
+            "maximum Price for tomorrow":"max. Preis für morgen",
+            "minimum Price for tomorrow":"min. Preis für morgen",
+            "lowest price at this point in time for tomorrow": "niedrigster Preis am diesem Zeitpunkt für morgen",
+            "highest price at this point in time for tomorrow":"höchster Preis am diesem Zeitpunkt für morgen",
+            "minimum/maximum Price range for today":" min/max Preisspanne für heute",
+            "maximum Price for today":"max. Preis für heute",
+            "minimum Price for today":"min. Preis für heute",
+            "lowest price at this point in time for today": "niedrigster Preis am diesem Zeitpunkt für heute",
+            "highest price at this point in time for today":"höchster Preis am diesem Zeitpunkt für heute",
             "quantity of very cheapest price":"Anzahl sehr günstiger Preis",
             "quantity of cheapest price":"Anzahl günstiger Preis ",
 			"quantity of normal price":"Anzahl normaler Preis",
 			"quantity of highest price":"Anzahl teurer Preis",
 			"quantity of very highest price":"Anzahl sehr teurer Preis",
             "no contract available, we receive no data from tibber":"kein Vertrag vorhanden, wir bekommen keine Preisdaten.",
-            "Too many requests. Your IP is now temporarily banned for calling API for a few minutes.":"Zu viele Anfragen. Die IP ist temporär für einige minuten geblockt."
+            "Too many requests. Your IP is now temporarily banned for calling API for a few minutes.":"Zu viele Anfragen. Die IP ist temporär für einige minuten geblockt.",
+            " o clock": " Uhr"
         }
     }
 }
