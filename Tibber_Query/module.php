@@ -623,7 +623,7 @@ require_once __DIR__ . '/../libs/functions.php';
 				$noon = false;
 				date_default_timezone_set('Europe/Berlin');
 				$h = date('G');
-				if ($h >13)
+				if ($h >=13)
 				{ 
 					$noon = true;
 				}
