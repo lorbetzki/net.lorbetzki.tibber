@@ -170,13 +170,13 @@ require_once __DIR__ . '/../libs/functions.php';
 					$this->SendDebug(__FUNCTION__, 'reset Watchdog',0);
 
 					// check if we receive a data array in payload, otherwise send message
-					if (is_array($payload['payload']['data']))
+					if (@is_array($payload['payload']['data']))
 					{
 						$this->ProcessReceivedPayload($payload);
 					}
 					else
 					{
-						$this->LogMessage("Tibber JSON Error :".json_last_error_msg(). " Payload: ". json_encode($payload['payload']['data']), KL_ERROR);
+						$this->LogMessage("Tibber JSON Error :".json_last_error_msg(). " Payload: ". json_encode($payload), KL_ERROR);
 					}
 					$this->SendDebug(__FUNCTION__, 'Payload: '.json_encode($JSONString),0);
 
@@ -454,7 +454,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			{    
 				$counter = $this->ReadAttributeInteger('WTCounter');
 			   
-				if(($counter > 3) OR $reset == true){
+				if(($counter > 4) OR $reset == true){
 					$counter = $this->WriteAttributeInteger('WTCounter',1);
 					return true;
 				}

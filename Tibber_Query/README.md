@@ -41,8 +41,7 @@ Name          				     | Beschreibung
 Benutzer Token | Access-Token aus der Tibber API eintragen
 Heim auswählen | Nachdem der Token eingetragen und die Änderung übernommen wurde, werden hier die im Account gespeicherten Heime aufgeführt. Wählt das, welches Ihr abfragen möchtet
 Preisdatenvariablen loggen | Diese Checkbox muss aktiviert werden, wenn die Day Ahead Preise im Archiv gespeichert sowie der Multi-Chart erzeugt werden sollen. [1] 
-Preisvariablen pro Stunde anlegen |Wird diese Checkbox aktivert, werden 48 Variablen ( 24 für den aktuellen Tag und 24 für den Folgetag) für jede Stunde angelegt, welche beim Abruf der Day Ahead Preise aktualisiert werden.
-Preis Array anlegen | Auswahl diverser Variablen WIRD ERSETZT DURCH DIE FUNKTION TIBBER_PriceArray();
+Preisvariablen pro Stunde anlegen | Wird diese Checkbox aktivert, werden 48 Variablen ( 24 für den aktuellen Tag und 24 für den Folgetag) für jede Stunde angelegt, welche beim Abruf der Day Ahead Preise aktualisiert werden.
 einige Statistiken | erstellt Variablen mit ein paar statistischen werten.
 
 aktiviere Instanz | aktivieren der Instanz
@@ -114,11 +113,16 @@ Morgen 21 bis 22 Uhr | FLOAT | Preisvariable pro Stunde
 Morgen 22 bis 23 Uhr | FLOAT | Preisvariable pro Stunde 
 Morgen 23 bis 24 Uhr | FLOAT | Preisvariable pro Stunde 
 Morgen 23 bis 24 Uhr | FLOAT | Preisvariable pro Stunde 
-min/max Preisspanne | FLOAT | Preisspanne, also die differenz zwischen min und max Wert
-max. Preis | FLOAT | der höchste Tagespreis 
-min. Preis | FLOAT | der niedriegste Tagespreis
-niedrigster Preis am diesem Zeitpunkt | INT | der niedriegste war zu diesem Zeitpunkt
-höchster Preis am diesem Zeitpunkt | INT | der höchste Preis war zu diesem Zeitpunkt
+min/max Preisspanne für heute | FLOAT | Preisspanne, also die differenz zwischen min und max Wert
+max. Preis für heute  | FLOAT | der höchste Tagespreis 
+min. Preis für heute | FLOAT | der niedriegste Tagespreis
+niedrigster Preis am diesem Zeitpunkt  für heute | INT | der niedriegste war zu diesem Zeitpunkt
+höchster Preis am diesem Zeitpunkt für heute | INT | der höchste Preis war zu diesem Zeitpunkt
+min/max Preisspanne für morgen | FLOAT | Preisspanne, also die differenz zwischen min und max Wert
+max. Preis für morgen | FLOAT | der höchste Tagespreis 
+min. Preis für morgen | FLOAT | der niedriegste Tagespreis
+niedrigster Preis am diesem Zeitpunkt für morgen | INT | der niedriegste war zu diesem Zeitpunkt
+höchster Preis am diesem Zeitpunkt für morgen | INT | der höchste Preis war zu diesem Zeitpunkt
 Anzahl sehr günstiger Preis | INT | Anzahl des Preises
 Anzahl günstiger Preis | INT | Anzahl des Preises
 Anzahl normaler Preis | INT | Anzahl des Preises
@@ -129,8 +133,9 @@ Anzahl sehr teurer Preis | INT | Anzahl des Preises
 
 Name                    | Typ
 ------------------------| -------
-Tibber.price.cent | Integer | Eurocent zweistellig
-Tibber.price.level | Integer | ermittelter Preislevel von Tibber 1 = sehr günstig, 2 = günstig, 3 = normal, 4 = teuer, 5 = sehr teuer, 0 = -
+Tibber.price.cent | INT | Eurocent zweistellig
+Tibber.price.level | INT | ermittelter Preislevel von Tibber 1 = sehr günstig, 2 = günstig, 3 = normal, 4 = teuer, 5 = sehr teuer, 0 = -
+Tibber.price.hour | INT | zeigt nur den Suffix "Uhr" an. 
 
 ### .6 PHP-Befehlsreferenz
 `TIBBER_GetPriceData(integer $InstanzID);`
@@ -149,16 +154,48 @@ Beispiel:
 `TIBBER_SetActualPrice(12345);`	
 
 
-`TIBBER_GetConsumptionHourly(integer $InstanzID);`, 
-`TIBBER_GetConsumptionDAILY(integer $InstanzID);`, 
-`TIBBER_GetConsumptionWEEKLY(integer $InstanzID);`, 
-`TIBBER_GetConsumptionMONTHLY(integer $InstanzID);`, 
-`TIBBER_GetConsumptionANNUAL(integer $InstanzID);`
 
-Holt sich Verbrauchsdaten für den jeweiligen Zeitraum ab.
+`TIBBER_GetConsumptionHourlyLast(integer $InstanzID, integer $count);`,
 
-Beispiel:
-`TIBBER_GetConsumptionHourly(12345);`
+`TIBBER_GetConsumptionDailyLast(integer $InstanzID, integer $count);`, 
+
+`TIBBER_GetConsumptionWeeklyLast(integer $InstanzID, integer $count);`, 
+
+`TIBBER_GetConsumptionMonthlyLast(integer $InstanzID, integer $count);`, 
+
+`TIBBER_GetConsumptionYearlyLast(integer $InstanzID, integer $count);`
+
+Holt sich die letzen Verbrauchsdaten für den angegebenen ($count) Zeitraum ab. $count gibt die Anzahl der Datensätze an. Als Ergebnis kommt ein JSON Codierter Datensatz mit dem man weiterarbeiten kann.
+
+Beispiel starte ich um 21:00 diese Abfrage werden die letzten 24 Stunden ab 21:00 des vortages abgeholt:
+
+`TIBBER_GetConsumptionHourlyLast(12345,24);`
+
+Beispiel holt den letzten Monat ab:
+
+`TIBBER_GetConsumptionMonthlyLast(12345,1);`
+
+
+
+`TIBBER_GetConsumptionHourlyFirst(integer $InstanzID, integer $count);`, 
+
+`TIBBER_GetConsumptionDailyFirst(integer $InstanzID, integer $count);`, 
+
+`TIBBER_GetConsumptionWeeklyFirst(integer $InstanzID, integer $count);`, 
+
+`TIBBER_GetConsumptionMonthlyFirst(integer $InstanzID, integer $count);`, 
+
+`TIBBER_GetConsumptionYearlyFirst(integer $InstanzID, integer $count);`
+
+Holt sich die Verbrauchsdaten für den angegebenen ($count) Zeitraum ab. $count gibt die Anzahl der Datensätze an. Als Ergebnis kommt ein JSON Codierter Datensatz mit dem man weiterarbeiten kann.
+
+Beispiel holt die letzten 24 Stunden ab Anfang des Monats ab:
+
+`TIBBER_GetConsumptionHourlyFirst(12345,24);`
+
+Beispiel holt die Daten des aktuellen Monats ab:
+
+`TIBBER_GetConsumptionMonthlyFirst(12345,1);`
 
 
 `TIBBER_PriceArray(integer $InstanzID);`

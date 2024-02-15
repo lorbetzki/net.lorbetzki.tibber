@@ -20,6 +20,7 @@ require_once __DIR__ . '/../libs/functions.php';
 			$this->RegisterPropertyBoolean("Consumption_log", false);
 			$this->RegisterPropertyBoolean("Price_Variables", false);
 			$this->RegisterPropertyBoolean("Price_ArrayBool", false);
+			
 			$this->RegisterPropertyBoolean("Statistics", false);
 
 			$this->RegisterAttributeString("Homes", "");
@@ -85,29 +86,54 @@ require_once __DIR__ . '/../libs/functions.php';
 
 		}
 
-		public function GetConsumptionHourly()
+		public function GetConsumptionHourlyLast(int $count)
 		{
-			$this->GetConsumptionData('HOURLY');
+			return $this->GetConsumptionData('HOURLY', $count);
 		}
 
-		public function GetConsumptionDaily()
+		public function GetConsumptionDailyLast(int $count)
 		{
-			$this->GetConsumptionData('DAILY');
+			return $this->GetConsumptionData('DAILY', $count);
 		}
 
-		public function GetConsumptionWeekyl()
+		public function GetConsumptionWeekylLast(int $count)
 		{
-			$this->GetConsumptionData('WEEKLY');
+			return $this->GetConsumptionData('WEEKLY', $count);
 		}
 
-		public function GetConsumptionMonthly()
+		public function GetConsumptionMonthlyLast(int $count)
 		{
-			$this->GetConsumptionData('MONTHLY');
+			return $this->GetConsumptionData('MONTHLY', $count);
 		}
 
-		public function GetConsumptionYearly()
+		public function GetConsumptionYearlyLast(int $count)
 		{
-			$this->GetConsumptionData('ANNUAL');
+			return $this->GetConsumptionData('ANNUAL', $count);
+		}
+
+		public function GetConsumptionHourlyFirst(int $count)
+		{
+			return $this->GetConsumptionData('HOURLY', $count, $first='first:');
+		}
+
+		public function GetConsumptionDailyFirst(int $count)
+		{
+			return $this->GetConsumptionData('DAILY', $count, $first='first:');
+		}
+
+		public function GetConsumptionWeekylFirst(int $count)
+		{
+			return $this->GetConsumptionData('WEEKLY', $count, $first='first:');
+		}
+
+		public function GetConsumptionMonthlyFirst(int $count)
+		{
+			return $this->GetConsumptionData('MONTHLY', $count, $first='first:');
+		}
+
+		public function GetConsumptionYearlyFirst(int $count)
+		{
+			return $this->GetConsumptionData('ANNUAL', $count, $first='first:');
 		}
 
 		public function SetActualPrice(){
@@ -187,16 +213,16 @@ require_once __DIR__ . '/../libs/functions.php';
 			return json_encode($jsonform);
 		}
 
-		private function GetConsumptionData(string $timing)
+		private function GetConsumptionData(string $timing, int $count, string $first='last:')
 		{
 			// Build Request Data
-			$count = 10;
-			$request = '{ "query": "{viewer { home(id: \"'. $this->ReadPropertyString('Home_ID') .'\") { consumption(resolution: '.$timing.', last: '.$count.') { nodes { from to cost unitPrice unitPriceVAT consumption consumptionUnit }}}}}"}';
+			$request = '{ "query": "{viewer { home(id: \"'. $this->ReadPropertyString('Home_ID') .'\") { consumption(resolution: '.$timing.','.$first.$count.') { nodes { from to cost unitPrice unitPriceVAT consumption consumptionUnit }}}}}"}';
 			$result = $this->CallTibber($request);
 			if (!$result) return;		//Bei Fehler abbrechen
 
 			$this->SendDebug("Consumption_Result", $result, 0);
 			//$this->process_consumption_data($result, $timing);
+			return $result;
 		}
 
 		private function ProcessConsumptionData(string $result, string $timing)
