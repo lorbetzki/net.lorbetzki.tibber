@@ -216,7 +216,7 @@ require_once __DIR__ . '/../libs/functions.php';
 		private function GetConsumptionData(string $timing, int $count, string $first='last:')
 		{
 			// Build Request Data
-			$request = '{ "query": "{viewer { home(id: \"'. $this->ReadPropertyString('Home_ID') .'\") { consumption(resolution: '.$timing.','.$first.$count.') { nodes { from to cost unitPrice unitPriceVAT consumption consumptionUnit }}}}}"}';
+			$request = '{ "query": "{viewer { home(id: \"'. $this->ReadPropertyString('Home_ID') .'\") { consumption(resolution: '.$timing.','.$first.$count.') { nodes { from to cost unitPrice unitPriceVAT consumption consumptionUnit currency }}}}}"}';
 			$result = $this->CallTibber($request);
 			if (!$result) return;		//Bei Fehler abbrechen
 
